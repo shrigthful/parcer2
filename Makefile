@@ -1,6 +1,8 @@
 NAME = minishell
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
+RLFLAGS = -L ~/.brew/opt/readline/lib -lreadline
+INCLUDES = -I ~/.brew/opt/readline/include -I ./minishell
 FILES = minishell.c \
 	get_next_line.c \
 	string1.c \
@@ -9,9 +11,13 @@ FILES = minishell.c \
 	string4.c \
 	string5.c \
 	linked_list.c \
+	linked_list2.c \
 	parsing.c \
 	qoutes.c \
 	replace_env.c \
+	execute.c \
+	builtin_commands.c \
+	conv_to_cmd.c \
 
 OFILES = $(FILES:.c=.o)
 OBFILES = $(BFILES:.c=.o)
@@ -19,10 +25,10 @@ OBFILES = $(BFILES:.c=.o)
 all : $(NAME) clean
 
 $(NAME) : $(OFILES)
-	$(CC) -fsanitize=address $(CFLAGS) $(OFILES) -o $(NAME)
+	$(CC) $(CFLAGS) $(RLFLAGS) $(OFILES) $(INCLUDES) -o $(NAME)
 
 %.o : %.c
-	$(CC) $(CFLAGS) -c $^
+	$(CC) $(CFLAGS) -c $^ $(INCLUDES)
 
 clean :
 	rm -f $(OFILES) $(OBFILES)

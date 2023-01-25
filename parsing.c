@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/23 16:22:38 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/24 20:30:35 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ void	join_nodes(t_list **h)
 	del_range(todel->content);
 	free(todel);
 	((t_range *)(*h)->content)->str = new_str;
+	printf("  %s  \n", new_str);
 }
 
 void	join_lines(t_list **lst)
@@ -67,16 +68,19 @@ void	join_lines(t_list **lst)
 	t_list	*help;
 
 	help = *lst;
-	while (help->next)
+	while (help)
 	{
+		if (help->next == NULL)
+			return ;
 		if (((t_range *)help->content)->type != 0
 			&& ((t_range *)help->content)->next_is_space == 0)
 		{
 			if (((t_range *)help->next->content)->type != 0)
+			{
 				join_nodes(&help);
+				continue ;
+			}
 		}
-		if (help->next == NULL)
-			break ;
 		help = help->next;
 	}
 }
@@ -89,13 +93,29 @@ void	print_ranges(t_list *lst)
 		//printf("next is space %i	%s\n", ((t_range *)lst->content)->next_is_space , ((t_range *)lst->content)->str);
 		lst = lst->next;
 	}
-
 }
 
-void	handle_line(char *line)
+void	print_cmds(t_cmd *lst)
+{
+	printf("cmd = %s\n", lst->cmd);
+	while (lst)
+	{
+		int	i = 0;
+		while(lst->param[i])
+		{
+			printf("%s\n", lst->param[i]);
+			i++;
+		}
+		//printf("next is space %i	%s\n", ((t_range *)lst->content)->next_is_space , ((t_range *)lst->content)->str);
+		lst = lst->next;
+	}
+}
+
+void	handle_line(char *line, t_main_args *main_args)
 {
 	char	*line2;
 	t_list	*lst;
+	t_cmd	*cmd;
 
 	line2 = ft_strtrim(line, " \f\v\n\r\t");
 	if (line2 == NULL)
@@ -103,7 +123,11 @@ void	handle_line(char *line)
 	lst = qoutes_handling(line2);
 	replace_env(&lst);//test + fix????????????????????
 	join_lines(&lst);
-	print_ranges(lst);
+	//print_ranges(lst);
+	cmd = conv_to_cmd(&lst);
+	(void)main_args;
+	execute(cmd, main_args);
+	//print_cmds(cmd);
 	ft_lstclear(&lst, del_range);
 	free(line2);
 }

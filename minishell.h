@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 11:57:56 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/22 21:43:04 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/24 20:10:41 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,10 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <signal.h>
+# include <errno.h>
+# include <fcntl.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
 typedef struct s_list
 {
@@ -35,11 +39,19 @@ typedef struct s_range
 	int		next_is_space;
 }	t_range;
 
-typedef struct s_tab_cmd
+typedef struct s_cmd
 {
-	char	*cmd;
-	char	**param;
-}	t_tab_cmd;
+	char			*cmd;
+	char			**param;
+	struct s_cmd	*next;
+}					t_cmd;
+typedef struct s_main_args
+{
+	int				ac;
+	char			**av;
+	char			**env;
+}					t_main_args;
+
 // strings
 size_t	ft_strlen(const char *s);
 char	*ft_strjoin(char const *s1, char const *s2);
@@ -54,6 +66,7 @@ char	*get_next_line(int fd);
 //string4
 char	*ft_strtrim(char const *s1, char const *set);
 char	*ft_strdup(const char *s1);
+int		ft_strcmp(const char *s1, const char *s2);
 //string5
 
 int		ft_isdigit(int c);
@@ -65,11 +78,32 @@ void	ft_lstclear(t_list **lst, void (*del)(void*));
 void	ft_lstadd_back(t_list **lst, t_list *new);
 t_list	*ft_lstlast(t_list *lst);
 //read line
-void	handle_line(char *line);
+void	handle_line(char *line, t_main_args *main_args);
 //step 1
 char	check_is_symbol(char s);
 int		is_space(char s);
 t_list	*qoutes_handling(char *line);
 void	replace_env(t_list **lst);
+t_cmd	*ft_lstlast2(t_cmd *lst);
+void	ft_lstadd_back2(t_cmd **lst, t_cmd *new);
+void	ft_lstclear2(t_cmd **lst, void (*del)(void *));
+t_cmd	*ft_lstnew2(char *cmd, char **param);
+
+//builtin_commands
+void	my_cd(t_cmd *cmd, t_main_args *main_args);
+void	my_echo(t_cmd *cmd, t_main_args *main_args);
+void	my_pwd(t_main_args *main_args);
+void	my_env(t_main_args *main_args);
+void	my_export(t_cmd *cmd, t_main_args *main_args);
+void	my_unset(t_cmd *cmd, t_main_args *main_args);
+void	my_exit(void);
+
+//execute
+void	execute(t_cmd *cmd, t_main_args *main_args);
+char	*bring_path(t_main_args *main_args, char *cmd);
+void	handle_builtins(t_cmd *cmd, t_main_args *main_args, int *built);
+char	*my_get_env(char *var, t_main_args *main_args);
+//conv to cmd
+t_cmd	*conv_to_cmd(t_list **lst);
 
 #endif
