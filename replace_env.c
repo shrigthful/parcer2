@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/23 21:11:27 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/25 18:16:38 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,11 +80,12 @@ int	replace_as_exit_status(char **str, int i)
 	end = ft_substr(*str, i + 1, 1);
 	if (start == NULL || end == NULL)
 		exit(1);
-	var_vale = getenv("?");//noot good val
+	var_vale = ft_itoa(vars.last_exit_sat);
 	free(end);
 	end = ft_substr(*str, i + 2, ft_strlen(*str) - (i + 1));
 	free(*str);
 	*str = group_strs(start, var_vale, end);
+	free(var_vale);
 	return (i + 2);
 }
 

@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/24 20:30:35 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/25 18:07:00 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,7 @@ void	join_nodes(t_list **h)
 	free(((t_range *)(*h)->content)->str);
 	del_range(todel->content);
 	free(todel);
-	((t_range *)(*h)->content)->str = new_str;
-	printf("  %s  \n", new_str);
-}
+	((t_range *)(*h)->content)->str = new_str;}
 
 void	join_lines(t_list **lst)
 {
@@ -111,7 +109,7 @@ void	print_cmds(t_cmd *lst)
 	}
 }
 
-void	handle_line(char *line, t_main_args *main_args)
+void	handle_line(char *line)
 {
 	char	*line2;
 	t_list	*lst;
@@ -125,8 +123,7 @@ void	handle_line(char *line, t_main_args *main_args)
 	join_lines(&lst);
 	//print_ranges(lst);
 	cmd = conv_to_cmd(&lst);
-	(void)main_args;
-	execute(cmd, main_args);
+	execute(cmd, &vars.args);
 	//print_cmds(cmd);
 	ft_lstclear(&lst, del_range);
 	free(line2);

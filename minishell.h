@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 11:57:56 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/24 20:10:41 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/25 18:15:52 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,15 @@ typedef struct s_main_args
 	char			**env;
 }					t_main_args;
 
+typedef struct s_vars
+{
+	t_main_args	args;
+	pid_t		curent_pid;
+	int			last_exit_sat;
+}					t_vars;
+
+t_vars	vars;
+
 // strings
 size_t	ft_strlen(const char *s);
 char	*ft_strjoin(char const *s1, char const *s2);
@@ -72,13 +81,14 @@ int		ft_strcmp(const char *s1, const char *s2);
 int		ft_isdigit(int c);
 int		ft_isalpha(int c);
 int		ft_isalnum(int c);
+char	*ft_itoa(int n);
 //linked list
 t_list	*ft_lstnew(void *content);
 void	ft_lstclear(t_list **lst, void (*del)(void*));
 void	ft_lstadd_back(t_list **lst, t_list *new);
 t_list	*ft_lstlast(t_list *lst);
 //read line
-void	handle_line(char *line, t_main_args *main_args);
+void	handle_line(char *line);
 //step 1
 char	check_is_symbol(char s);
 int		is_space(char s);

@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/22 21:42:14 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/01/25 13:26:37 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/25 18:12:24 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ void	execute(t_cmd *cmd, t_main_args *main_args)
 	dup2(tmpout, 1);
 	close(tmpin);
 	close(tmpout);
-	waitpid(ret, NULL, 0);
+	waitpid(ret, &vars.last_exit_sat, 0);
 	// if (!background)
 	// 	waitpid(ret, NULL);
 }
