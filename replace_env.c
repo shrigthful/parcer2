@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/25 18:16:38 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/29 20:16:43 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,25 +49,16 @@ char	*group_strs(char *start, char *var_vale, char *end)
 	return (new_str);
 }
 
-int	replace_as_digit(char **str, int i)
+int	replace_as_digit(char **str, int i, int type)
 {
-	char	*start;
-	char	*var_vale;
-	char	*end;
-
-	if (i == 0)
-		start = ft_calloc(1, 1);
+	if (type == ' ')
+	{
+		*str = NULL;
+		return (-1);
+	}
 	else
-		start = ft_substr(*str, 0, i);
-	end = ft_substr(*str, i + 1, 1);
-	if (start == NULL || end == NULL)
-		exit(1);
-	var_vale = getenv(end);
-	free(end);
-	end = ft_substr(*str, i + 2, ft_strlen(*str));
-	free(*str);
-	*str = group_strs(start, var_vale, end);
-	return (i + 2);
+		*str = ft_calloc(1, 1);
+	return (i);
 }
 
 int	replace_as_exit_status(char **str, int i)
@@ -80,54 +71,19 @@ int	replace_as_exit_status(char **str, int i)
 	end = ft_substr(*str, i + 1, 1);
 	if (start == NULL || end == NULL)
 		exit(1);
-	var_vale = ft_itoa(vars.last_exit_sat);
+	if (WIFEXITED(vars.last_exit_sat))
+		var_vale = ft_itoa(WEXITSTATUS(vars.last_exit_sat));
+	else
+		var_vale = ft_itoa(vars.last_exit_sat);
 	free(end);
 	end = ft_substr(*str, i + 2, ft_strlen(*str) - (i + 1));
 	free(*str);
 	*str = group_strs(start, var_vale, end);
 	free(var_vale);
-	return (i + 2);
+	return (i);
 }
 
-int	get_end_ofvar(char *str, int i)
-{
-	int		j;
-
-	j = i + 1;
-	while (str[j])
-	{
-		if (ft_isalnum(str[j]) == 1)
-			j++;
-		else
-			break;
-	}
-	return (j);
-}
-
-int	replace_as_alpha(char **str, int i)
-{
-	char	*start;
-	char	*var_vale;
-	char	*end;
-	int		j;
-
-	start = ft_substr(*str, 0, i);
-	j = get_end_ofvar(*str, i);
-	end = ft_substr(*str, i + 1, j);
-	if (start == NULL || end == NULL)
-		exit(1);
-	var_vale = getenv(end);
-	free(end);
-	end = ft_substr(*str, j, ft_strlen(*str) - j);
-	if (end == NULL)
-		exit(1);
-	free(*str);
-	j = (int)ft_strlen(end);
-	*str = group_strs(start, var_vale, end);
-	return ((int)ft_strlen(*str) - j);
-}
-
-void	change_str(char **str)
+void	change_str(char **str, int type)
 {
 	int	i;
 
@@ -136,14 +92,16 @@ void	change_str(char **str)
 	{
 		if ((*str)[i] == '$')
 		{
-			if(ft_isdigit((*str)[i + 1]) == 1)
-				i = replace_as_digit(str, i);
-			else if(ft_isalpha((*str)[i + 1]) == 1)
-				i = replace_as_alpha(str, i);
+			if (ft_isdigit((*str)[i + 1]) == 1)
+				i = replace_as_digit(str, i, type);
+			else if (ft_isalpha((*str)[i + 1]) == 1)
+				i = replace_as_alpha(str, i, type);
 			else if ((*str)[i + 1] == '?')
 				i = replace_as_exit_status(str, i);
 			else
 				i++;
+			if (i == -1)
+				return ;
 		}
 		else
 			i++;
@@ -157,9 +115,11 @@ void	replace_env(t_list **lst)
 	help = *lst;
 	while (help)
 	{
-		if (((t_range *)help->content)->type == '\"')
+		if (((t_range *)help->content)->type == '\"' ||
+			((t_range *)help->content)->type == ' ')
 		{
-			change_str(&(((t_range *)help->content)->str));
+			change_str(&(((t_range *)help->content)->str),
+			((t_range *)help->content)->type);
 		}
 		help = help->next;
 	}

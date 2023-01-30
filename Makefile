@@ -1,8 +1,8 @@
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
-RLFLAGS = -L ~/.brew/opt/readline/lib -lreadline
-INCLUDES = -I ~/.brew/opt/readline/include -I ./minishell
+CFLAGS =  -g3
+RLFLAGS = -L./lib/readline/lib -lreadline
+#INCLUDES = -I ./minishell.h
 FILES = minishell.c \
 	get_next_line.c \
 	string1.c \
@@ -12,12 +12,18 @@ FILES = minishell.c \
 	string5.c \
 	linked_list.c \
 	linked_list2.c \
+	linked_list3.c \
 	parsing.c \
 	qoutes.c \
 	replace_env.c \
+	replace_env_alpha.c \
 	execute.c \
 	builtin_commands.c \
 	conv_to_cmd.c \
+	deleters.c \
+	conv_to_cmd_init.c \
+	conv_to_cmd_checker.c \
+	conv_to_cmd_geters.c \
 
 OFILES = $(FILES:.c=.o)
 OBFILES = $(BFILES:.c=.o)

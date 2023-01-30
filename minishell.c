@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/25 18:40:21 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/26 19:11:19 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,7 @@
 
 void	sigint_handler(int sig)
 {
-	char	*line;
-
 	sig = 1;
-	line = readline(("minishell $> "));
-	handle_line(NULL);
-	//exit(0);
 }
 
 void	sigauit_handler(int sig)
@@ -44,7 +39,9 @@ void	setup_vars(int ac, char **av, char **env)
 int	main(int ac, char **av, char **env)
 {
 	char	*line;
+	t_list	*lines;
 
+	lines = NULL;
 	setup_vars(ac, av, env);
 	init_signals();
 	while (1)
@@ -52,7 +49,6 @@ int	main(int ac, char **av, char **env)
 		line = readline(("minishell $> "));
 		if (line == NULL)
 		{
-			gt
 			write(1, "exit\n", 6);
 			exit(0);
 		}
@@ -64,7 +60,6 @@ int	main(int ac, char **av, char **env)
 	/*
 	while (1)
 	{
-
 		write(1, "minishell >", 11);
 		line = get_next_line(0);
 		if (line != 0)

@@ -6,23 +6,54 @@
 /*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 23:21:17 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/01/23 20:48:03 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/01/28 12:56:38 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+int	my_set_env(char *var, char *value, t_main_args *main_args)
+{
+	int	i;
+
+	i = 0;
+	while (main_args->env[i] && ft_strncmp(main_args->env[i], var,
+			ft_strlen(var)))
+		i++;
+	if (main_args->env[i])
+	{
+		var = ft_strjoin(var, "=");
+		(main_args->env)[i] = ft_strjoin(var, value);
+		return (1);
+	}
+	return (0);
+}
+
 void	my_cd(t_cmd *cmd, t_main_args *main_args)
 {
 	char	*home_dir;
+	char	*cwd;
 
-	home_dir = getenv("HOME");
+	home_dir = my_get_env("HOME", main_args);
 	if (main_args->ac == 1)
-		chdir(home_dir);
+	{
+		if (chdir(home_dir) == -1)
+			write(2, "chdir Failed\n", 13);
+		else
+		{
+			cwd = getcwd(NULL, 0);
+			my_set_env("PWD", cwd, main_args);
+		}
+	}
 	else if (main_args->ac == 2)
 	{
-		if (chdir((cmd->param)[1]))
-			perror("cd");
+		if (chdir((cmd->param)[1]) == -1)
+			write(2, "chdir Failed\n", 13);
+		else
+		{
+			cwd = getcwd(NULL, 0);
+			my_set_env("PWD", cwd, main_args);
+		}
 	}
 }
 
@@ -55,7 +86,6 @@ void	my_echo(t_cmd *cmd, t_main_args *main_args)
 void	my_pwd(t_main_args *main_args)
 {
 	printf("%s\n", my_get_env("PWD", main_args));
-	// printf("%s\n", getenv("PWD"));
 }
 
 void	my_env(t_main_args *main_args)
@@ -65,9 +95,25 @@ void	my_env(t_main_args *main_args)
 	i = 0;
 	while ((main_args->env)[i])
 	{
-		printf("%s\n", (main_args->env)[i]);
+		write(1, (main_args->env)[i], ft_strlen((main_args->env)[i]));
+		write(1, "\n", 1);
 		i++;
 	}
+}
+
+int	check_valid(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (*s)
+	{
+		if (*s == '=')
+			return (i);
+		s++;
+		i++;
+	}
+	return (-1);
 }
 
 void	my_export(t_cmd *cmd, t_main_args *main_args)
@@ -76,15 +122,19 @@ void	my_export(t_cmd *cmd, t_main_args *main_args)
 	int			count;
 	char		*new_var;
 	char		**new_env;
+	int			is_equal_sign;
 
 	count = 0;
 	while ((main_args->env)[count])
 		count++;
-	new_env = malloc(sizeof(char *) * (count + 2));
+	is_equal_sign = check_valid((cmd->param)[i + 1]);
 	if (main_args->ac == 1)
 		my_env(main_args);
-	else
+	else if (main_args->ac != 1 && is_equal_sign != -1
+			&& !my_set_env(ft_substr((cmd->param)[i + 1], 0, is_equal_sign),
+				(cmd->param)[i + 1] + is_equal_sign + 1, main_args))
 	{
+		new_env = malloc(sizeof(char *) * (count + 2));
 		new_var = ft_strdup((cmd->param)[i + 1]);
 		count = 0;
 		while ((main_args->env)[count])
@@ -104,17 +154,6 @@ void	my_export(t_cmd *cmd, t_main_args *main_args)
 		i = 0;
 }
 
-int	check_valid(char *s)
-{
-	while (*s)
-	{
-		if (*s == '=')
-			return (1);
-		s++;
-	}
-	return (0);
-}
-
 void	my_unset(t_cmd *cmd, t_main_args *main_args)
 {
 	int			i;
@@ -129,7 +168,7 @@ void	my_unset(t_cmd *cmd, t_main_args *main_args)
 		write(2, "unset: not enough arguments\n", 28);
 		return ;
 	}
-	if (check_valid((cmd->param)[a + 1]))
+	if (check_valid((cmd->param)[a + 1]) != -1)
 	{
 		write(2, "not a valid identifier\n", 23);
 		return ;
@@ -167,5 +206,5 @@ void	my_unset(t_cmd *cmd, t_main_args *main_args)
 void	my_exit(void)
 {
 	write(1, "exit\n", 5);
-	exit(0);
+	exit(vars.last_exit_sat);
 }

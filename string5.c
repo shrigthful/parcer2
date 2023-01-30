@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/25 18:15:44 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/29 20:18:22 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ int	ft_isalpha(int c)
 	if (c >= 'A' && c <= 'Z')
 		return (1);
 	if (c >= 'a' && c <= 'z')
+		return (1);
+	if (c == '_')
 		return (1);
 	return (0);
 }
@@ -35,6 +37,8 @@ int	ft_isalnum(int c)
 	if (c >= 'a' && c <= 'z')
 		return (1);
 	if (c >= '0' && c <= '9')
+		return (1);
+	if (c == '_')
 		return (1);
 	return (0);
 }

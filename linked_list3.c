@@ -1,20 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   linked_list2.c                                     :+:      :+:    :+:   */
+/*   linked_list3.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/30 17:39:06 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/27 00:41:07 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_cmd	*ft_lstlast2(t_cmd *lst)
+t_pids	*ft_lstlast3(t_pids *lst)
 {
-	t_cmd	*h;
+	t_pids	*h;
 
 	h = lst;
 	if (h == NULL)
@@ -24,42 +24,42 @@ t_cmd	*ft_lstlast2(t_cmd *lst)
 	return (h);
 }
 
-void	ft_lstadd_back2(t_cmd **lst, t_cmd *new)
+void	ft_lstadd_back3(t_pids **lst, t_pids *new)
 {
 	if (!*lst)
 		*lst = new;
 	else
-		ft_lstlast2(*lst)->next = new;
+		ft_lstlast3(*lst)->next = new;
 }
 
-void	ft_lstclear2(t_cmd **lst, void (*del)(void *))
+// void	ft_lstclear3(t_pids **lst, void (*del)(void*))
+// {
+// 	t_pids	*h;
+// 	t_pids	*d;
+
+// 	if (lst && del)
+// 	{
+// 		if (*lst == NULL)
+// 			return ;
+// 		d = *lst;
+// 		h = (*lst)->next;
+// 		if (d->pid != NULL)
+// 			(*del)(d->pid);
+// 		free(*lst);
+// 		*lst = h;
+// 		if (h)
+// 			ft_lstclear3(lst, (*del));
+// 	}
+// }
+
+t_pids	*ft_lstnew3(int pid)
 {
-	t_cmd	*h;
-	t_cmd	*d;
+	t_pids	*new;
 
-	if (lst && del)
-	{
-		if (*lst == NULL)
-			return ;
-		d = *lst;
-		h = (*lst)->next;
-		free_arr(&d, del);
-		free(d);
-		*lst = h;
-		if (h)
-			ft_lstclear2(lst, (*del));
-	}
-}
-
-t_cmd	*ft_lstnew2(char *cmd, char **param)
-{
-	t_cmd	*new;
-
-	new = (t_cmd *)malloc(sizeof(t_cmd));
+	new = (t_pids *)malloc(sizeof(t_pids));
 	if (new == NULL)
 		return (NULL);
-	new->cmd = cmd;
-	new->param = param;
+	new->pid = pid;
 	new->next = NULL;
 	return (new);
 }

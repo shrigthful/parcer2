@@ -6,34 +6,49 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/24 20:30:21 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/30 17:57:17 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_cmd	*alloc_cmd(char *str, int alloc)
+void	insert_in_cmd(t_cmd	**cmd, t_list **lst, t_help h)
 {
-	static char	*p;
-	char		**split;
-	t_cmd		*r;
+	(*cmd)->param = get_params(h.params, *lst);
+	(*cmd)->cmd = (*cmd)->param[0];
+	(*cmd)->fles = malloc(sizeof(t_in_out));
+	if ((*cmd)->fles == NULL)
+		exit(0);
+	(*cmd)->fles->errfile = NULL;
+	(*cmd)->fles->input = get_input_files(h.infiles, *lst);
+	(*cmd)->fles->output = get_output_files(h.outfiles, *lst);
+	(*cmd)->next = NULL;
+}
 
-	if (alloc == 0)
+t_cmd	*get_node(t_list **lst)
+{
+	t_help	h;
+	t_cmd	*cmd;
+
+	cmd = malloc(sizeof(t_cmd));
+	if (cmd == NULL)
+		exit(1);
+	init_help(&h);
+	count_until_token(&h, *lst);
+	insert_in_cmd(&cmd, lst, h);
+	while (h.nodes > 0)
 	{
-		p = ft_strjoin(p, " ");
-		p = ft_strjoin(p, str);
-		return (NULL);
+		h.nodes--;
+		*lst = (*lst)->next;
+	}
+	if (*lst != NULL)
+	{
+		cmd->token = ((t_range *)(*lst)->content)->str;
+		*lst = (*lst)->next;
 	}
 	else
-	{
-		split = ft_split(p, ' ');
-		free(p);
-		p = NULL;
-		r = ft_lstnew2(split[0], split);
-		if (r == NULL)
-			exit(1);
-		return (r);
-	}
+		cmd->token = NULL;
+	return (cmd);
 }
 
 t_cmd	*conv_to_cmd(t_list **lst)
@@ -42,16 +57,13 @@ t_cmd	*conv_to_cmd(t_list **lst)
 	t_list	*h;
 
 	cmds = NULL;
+	if (check_tokens(*lst) == 0)
+	{
+		ft_lstclear(lst, free_range_arr);
+		return (NULL);
+	}
 	h = *lst;
 	while (h)
-	{
-		if (((t_range *)h->content)->type != 0)
-			alloc_cmd(((t_range *)h->content)->str, 0);
-		else
-			ft_lstadd_back2(&cmds, alloc_cmd(NULL, 1));
-		if (h->next == NULL && ((t_range *)h->content)->type != 0)
-			ft_lstadd_back2(&cmds, alloc_cmd(NULL, 1));
-		h = h->next;
-	}
+		ft_lstadd_back2(&cmds, get_node(&h));
 	return (cmds);
 }

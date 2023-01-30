@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/16 21:37:19 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/28 11:27:55 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,4 +81,18 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	if (!s1[i] && s2[i] && i < n)
 		return (-*((unsigned char *)s2 + i));
 	return (0);
+}
+
+int	ft_strncmp1(const char *s1, const char *s2, size_t n)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (s1[i] == s2[i] && s1[i] && s2[i] && i < n)
+	{
+		i++;
+	}
+	if (i == n)
+		return (0);
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }

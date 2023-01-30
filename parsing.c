@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/25 18:07:00 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/30 19:14:02 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,6 @@ char	check_is_symbol(char s)
 	if (s == '<')
 		return('>');
 	return (0);
-}
-
-void	del_range(void *range)
-{
-	if ((t_range *)range == NULL)
-		return ;
-	if (((t_range *)range)->str != NULL)
-		free(((t_range *)range)->str);
-	free((t_range *)range);
 }
 
 void	join_nodes(t_list **h)
@@ -93,18 +84,33 @@ void	print_ranges(t_list *lst)
 	}
 }
 
-void	print_cmds(t_cmd *lst)
+void	print_io(t_list *lst)
 {
-	printf("cmd = %s\n", lst->cmd);
 	while (lst)
 	{
+		printf("	%s %s\n" ,((t_io *)lst->content)->type
+			, ((t_io *)lst->content)->file);
+		lst = lst->next;
+	}
+}
+
+void	print_cmds(t_cmd *lst)
+{
+	printf("+++CMDS++++\n");
+	while (lst)
+	{
+		printf("cmd = %s\n", lst->cmd);
 		int	i = 0;
 		while(lst->param[i])
 		{
-			printf("%s\n", lst->param[i]);
+			printf("	%s\n", lst->param[i]);
 			i++;
 		}
-		//printf("next is space %i	%s\n", ((t_range *)lst->content)->next_is_space , ((t_range *)lst->content)->str);
+		printf("infiles \n");
+		print_io(lst->fles->input);
+		printf("outfiles \n");
+		print_io(lst->fles->output);
+		printf("token '%s'\n",lst->token);
 		lst = lst->next;
 	}
 }
@@ -123,8 +129,10 @@ void	handle_line(char *line)
 	join_lines(&lst);
 	//print_ranges(lst);
 	cmd = conv_to_cmd(&lst);
-	execute(cmd, &vars.args);
-	//print_cmds(cmd);
-	ft_lstclear(&lst, del_range);
+	//if (cmd != NULL)
+		//execute(cmd, &vars.args);
+	print_cmds(cmd);
+	ft_lstclear2(&cmd, free);
+	ft_lstclear(&lst, free);
 	free(line2);
 }

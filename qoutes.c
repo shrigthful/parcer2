@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/23 16:20:12 by monabid          ###   ########.fr       */
+/*   Updated: 2023/01/29 17:58:47 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ int	insert_string(t_list **lst, int i, char *line)
 			str = ft_substr(line, i, j - i + 1);
 			if (str == NULL)
 				exit(1);
-			insert(lst, str, '\"', is_space(line[j + 1]));
+			insert(lst, str, ' ', is_space(line[j + 1]));
 			return (j + 1);
 		}
 		j++;
