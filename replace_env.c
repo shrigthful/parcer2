@@ -11,18 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-int	is_valid(char c)
-{
-	if (check_is_symbol(c) != 0)
-		return (1);
-	if (is_space(c) == 1)
-		return (1);
-	if (c == '\'' || c == '\"')
-		return (1);
-	return (0);
-}
-
+//xx delete is_valid
 char	*group_strs(char *start, char *var_vale, char *end)
 {
 	char	*join1;

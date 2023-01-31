@@ -21,15 +21,15 @@ int	is_space(char s)
 	}
 	return (0);
 }
-
-char	check_is_symbol(char s)
+//xx
+char	check_is_symbol(char s, char s2)
 {
 	if (s == '|')
 		return('|');
-	if (s == '&')
+	if (s == '&' && s2 == '&')
 		return('&');
 	if (s == '>')
-		return('>');
+		return('>')
 	if (s == '<')
 		return('>');
 	return (0);
@@ -50,7 +50,8 @@ void	join_nodes(t_list **h)
 	free(((t_range *)(*h)->content)->str);
 	del_range(todel->content);
 	free(todel);
-	((t_range *)(*h)->content)->str = new_str;}
+	((t_range *)(*h)->content)->str = new_str;
+}
 
 void	join_lines(t_list **lst)
 {
@@ -127,7 +128,7 @@ void	handle_line(char *line)
 	lst = qoutes_handling(line2);
 	replace_env(&lst);//test + fix????????????????????
 	join_lines(&lst);
-	//print_ranges(lst);
+	print_ranges(lst);
 	cmd = conv_to_cmd(&lst);
 	//if (cmd != NULL)
 		//execute(cmd, &vars.args);

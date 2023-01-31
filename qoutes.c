@@ -73,18 +73,26 @@ int	insert_symbol(t_list **lst, int i, char *line)
 	insert(lst, str, 0, is_space(line[i + 1]));
 	return (i + 1);
 }
-
-int	stop_here(char c)
+//xx
+int	stop_here(char *c, int i)
 {
-	if (check_is_symbol(c) != 0)
+	if (c[i + 1] == 0)
+	{
+		if (check_is_symbol(c[i], 0) != 0)
+			return (1);
+	}
+	else
+	{
+		if (check_is_symbol(c[i], c[i + 1]) != 0)
+			return (1);
+	}
+	if (is_space(c[i]) == 1)
 		return (1);
-	if (is_space(c) == 1)
-		return (1);
-	if (c == '\'' || c == '\"')
+	if (c[i] == '\'' || c[i] == '\"')
 		return (1);
 	return (0);
 }
-
+//xx
 int	insert_string(t_list **lst, int i, char *line)
 {
 	char	qoute;
@@ -95,7 +103,7 @@ int	insert_string(t_list **lst, int i, char *line)
 	j = i;
 	while (line[j])
 	{
-		if (stop_here(line[j + 1]) == 1 || line[j + 1] == 0)
+		if (stop_here(line, j + 1) == 1 || line[j + 1] == 0)
 		{
 			str = ft_substr(line, i, j - i + 1);
 			if (str == NULL)
@@ -121,7 +129,7 @@ t_list *qoutes_handling(char *line)
 			i++;
 		else if (line[i] == '\'' || line[i] == '\"')
 			i = insert_qoutes(&lst, i, line);
-		else if (check_is_symbol(line[i]) != 0)
+		else if (check_is_symbol(line[i], line[i + 1]) != 0)
 			i = insert_symbol(&lst, i, line);
 		else
 			i = insert_string(&lst, i, line);

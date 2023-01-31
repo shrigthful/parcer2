@@ -19,18 +19,19 @@
 
 # include <errno.h>
 # include <fcntl.h>
-# include <readline/history.h>
-# include <readline/readline.h>
 # include <signal.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <readline/history.h>
+# include <readline/readline.h>
 
 typedef struct s_list
 {
 	void			*content;
 	struct s_list	*next;
 }					t_list;
+
 typedef struct s_pids
 {
 	int				pid;
@@ -119,7 +120,7 @@ t_list				*ft_lstlast(t_list *lst);
 //read line
 void				handle_line(char *line);
 //step 1
-char				check_is_symbol(char s);
+char				check_is_symbol(char s, char s2);
 int					is_space(char s);
 t_list				*qoutes_handling(char *line);
 //step 2
