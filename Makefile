@@ -1,8 +1,8 @@
 NAME = minishell
 CC = cc
 CFLAGS =  -g3
-RLFLAGS = -L./lib/readline/lib -lreadline
-#INCLUDES = -I ./minishell.h
+RLFLAGS = -L/goinfre/monabid/homebrew/opt/readline/lib -lreadline
+INCLUDES = -I/goinfre/monabid/homebrew/opt/readline/include -I./minishell.h
 FILES = minishell.c \
 	get_next_line.c \
 	string1.c \

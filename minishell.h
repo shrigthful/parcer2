@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 11:57:56 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/30 18:08:08 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/01 20:18:45 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <unistd.h>
 # include <readline/history.h>
 # include <readline/readline.h>
+# include <dirent.h>
 
 typedef struct s_list
 {
@@ -65,6 +66,13 @@ typedef struct s_cmd
 	char			*token;
 	struct s_cmd	*next;
 }					t_cmd;
+
+typedef struct s_expend
+{
+	char			*start;
+	t_list			*match;
+	char			*dir;
+}					t_expend;
 
 typedef struct s_main_args
 {

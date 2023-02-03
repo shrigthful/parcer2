@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/30 19:14:02 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/03 18:04:47 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,13 @@ int	is_space(char s)
 	}
 	return (0);
 }
-//xx
+
 char	check_is_symbol(char s, char s2)
 {
 	if (s == '|')
-		return('|');
-	if (s == '&' && s2 == '&')
-		return('&');
+		return ('|');
 	if (s == '>')
-		return('>')
+		return('>');
 	if (s == '<')
 		return('>');
 	return (0);

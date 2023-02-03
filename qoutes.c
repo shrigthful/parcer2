@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/29 17:58:47 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/03 18:06:23 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	insert_symbol(t_list **lst, int i, char *line)
 {
 	char	*str;
 
-	if (line[i] == line[i + 1])
+	if (line[i] == line[i + 1] && line[i] != '|')
 	{
 		str = malloc(3);
 		str[0] = line[i];
@@ -73,7 +73,7 @@ int	insert_symbol(t_list **lst, int i, char *line)
 	insert(lst, str, 0, is_space(line[i + 1]));
 	return (i + 1);
 }
-//xx
+
 int	stop_here(char *c, int i)
 {
 	if (c[i + 1] == 0)
@@ -92,7 +92,7 @@ int	stop_here(char *c, int i)
 		return (1);
 	return (0);
 }
-//xx
+
 int	insert_string(t_list **lst, int i, char *line)
 {
 	char	qoute;
