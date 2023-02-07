@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/06 20:14:51 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/07 14:03:57 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,16 +76,9 @@ int	insert_symbol(t_list **lst, int i, char *line)
 
 int	stop_here(char *c, int i)
 {
-	if (c[i + 1] == 0)
-	{
-		if (check_is_symbol(c[i], 0) != 0)
+
+	if (check_is_symbol(c[i]) != 0)
 			return (1);
-	}
-	else
-	{
-		if (check_is_symbol(c[i], c[i + 1]) != 0)
-			return (1);
-	}
 	if (is_space(c[i]) == 1)
 		return (1);
 	if (c[i] == '\'' || c[i] == '\"')
@@ -129,7 +122,7 @@ t_list *qoutes_handling(char *line)
 			i++;
 		else if (line[i] == '\'' || line[i] == '\"')
 			i = insert_qoutes(&lst, i, line);
-		else if (check_is_symbol(line[i], line[i + 1]) != 0)
+		else if (check_is_symbol(line[i]) != 0)
 			i = insert_symbol(&lst, i, line);
 		else
 			i = insert_string(&lst, i, line);

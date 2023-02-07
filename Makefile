@@ -1,6 +1,6 @@
 NAME = minishell
 CC = cc
-CFLAGS =  -g3
+CFLAGS = -fsanitize=address -g3
 RLFLAGS = -L/goinfre/monabid/homebrew/opt/readline/lib -lreadline
 INCLUDES = -I/goinfre/monabid/homebrew/opt/readline/include -I./minishell.h
 FILES = minishell.c \

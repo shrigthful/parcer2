@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/03 18:07:07 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/07 14:05:54 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@ int	main(int ac, char **av, char **env)
 	lines = NULL;
 	setup_vars(ac, av, env);
 	init_signals();
-/*
-	while (1) code id readline exits
+
+	while (1)
 	{
 		line = readline(("minishell $> "));
 		if (line == NULL)
@@ -63,27 +63,6 @@ int	main(int ac, char **av, char **env)
 			add_history(line);
 		handle_line(line);
 		free(line);
-	}
-*/
-//code if read line dont exist
-	while (1)
-	{
-		write(1, "minishell >", 11);
-		line = get_next_line(0);
-		if (line != 0)
-		{
-			if (line[0] != '\n')
-			{
-				handle_line(line);
-				write(1, "\n", 1);
-			}
-			free(line);
-		}
-		else
-		{
-			write(1, "exit\n", 5);
-			exit (0);
-		}
 	}
 	return (0);
 }

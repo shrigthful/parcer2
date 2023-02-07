@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/29 18:48:49 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/07 14:31:13 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,12 @@ int	get_end_ofvar(char *str, int i)
 	int	j;
 
 	j = i + 1;
-	while (str[j])
+	printf("j = %i\n", j);
+	while (ft_isalnum(str[j]) == 1)
 	{
-		if (ft_isalnum(str[j]) == 1)
-			j++;
-		else
-			break ;
+		j++;
 	}
-	return (j);
+	return (j - i - 1);
 }
 
 int	replace_as_alpha2(char **str, int i, int type, int j)
@@ -33,6 +31,7 @@ int	replace_as_alpha2(char **str, int i, int type, int j)
 	char	*var_vale;
 	char	*end;
 
+	printf("j == %i\n", j);
 	start = ft_substr(*str, 0, i);
 	end = ft_substr(*str, i + 1, j);
 	if (start == NULL || end == NULL)
@@ -40,7 +39,7 @@ int	replace_as_alpha2(char **str, int i, int type, int j)
 	//var_vale = getenv(end);
 	var_vale = my_get_env(end, &vars.args);
 	free(end);
-	end = ft_substr(*str, j, ft_strlen(*str) - j);
+	end = ft_substr(*str, j + i + 1, ft_strlen(*str) - j + i + 1);
 	if (end == NULL)
 		exit(1);
 	free(*str);
@@ -57,7 +56,7 @@ int	replace_as_alpha(char **str, int i, int type)
 	int		j;
 
 	j = get_end_ofvar(*str, i);
-	if (i == 0 && j == ft_strlen(*str) && type == ' ')
+	if (i == 0 && j + 1 == ft_strlen(*str) && type == ' ')
 	{
 		start = NULL;
 		end = ft_substr(*str, i + 1, j);

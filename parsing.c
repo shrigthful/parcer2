@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/03 18:04:47 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/07 14:04:56 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	is_space(char s)
 	return (0);
 }
 
-char	check_is_symbol(char s, char s2)
+char	check_is_symbol(char s)
 {
 	if (s == '|')
 		return ('|');
@@ -130,7 +130,7 @@ void	handle_line(char *line)
 	cmd = conv_to_cmd(&lst);
 	//if (cmd != NULL)
 		//execute(cmd, &vars.args);
-	print_cmds(cmd);
+	//print_cmds(cmd);
 	ft_lstclear2(&cmd, free);
 	ft_lstclear(&lst, free);
 	free(line2);

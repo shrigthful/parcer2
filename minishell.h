@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 11:57:56 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/01 20:18:45 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/07 14:02:57 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ t_list				*ft_lstlast(t_list *lst);
 //read line
 void				handle_line(char *line);
 //step 1
-char				check_is_symbol(char s, char s2);
+char				check_is_symbol(char s);
 int					is_space(char s);
 t_list				*qoutes_handling(char *line);
 //step 2
