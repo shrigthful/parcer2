@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/18 19:15:55 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/20 16:29:53 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,19 @@ void	sigint_handler(int sig)
 {
 	sig = 1;
 	write(1, "\n", 1);
-	//rl_replace_line("", 1);
-	//rl_on_new_line();
-	//rl_redisplay();
+	if (g_vars.line_handled == 0)
+	{
+		rl_replace_line("", 1);
+		rl_on_new_line();
+		rl_redisplay();
+	}
 	g_vars.last_exit_sat = 1;
 }
 
 void	sigauit_handler(int sig)
 {
-	//rl_replace_line("", 1);
-	//rl_on_new_line();
+	rl_replace_line("", 1);
+	rl_on_new_line();
 	rl_redisplay();
 	(void)sig;
 }
@@ -59,6 +62,7 @@ int	main(int ac, char **av, char **env)
 	init_signals();
 	while (1337)
 	{
+		g_vars.line_handled = 0;
 		line = get_line();
 		if (line == NULL)
 		{
@@ -69,6 +73,7 @@ int	main(int ac, char **av, char **env)
 		}
 		if (*line != 0)
 			add_history(line);
+		g_vars.line_handled = 1;
 		handle_line(line, &args);
 		free(line);
 	}

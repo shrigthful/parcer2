@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 11:57:56 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/19 16:35:49 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/20 16:21:52 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ typedef struct s_g_vars
 {
 	t_main_args		*args;
 	int				last_exit_sat;
+	int				line_handled;
 }					t_g_vars;
 
 typedef struct s_help

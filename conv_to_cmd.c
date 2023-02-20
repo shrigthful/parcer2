@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/19 16:59:20 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/20 16:10:45 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	insert_in_cmd(t_cmd **cmd, t_list **lst, t_help h)
 	(*cmd)->fles->errfile = NULL;
 	(*cmd)->fles->input = get_input_files(h.infiles, *lst);
 	(*cmd)->fles->output = get_output_files(h.outfiles, *lst);
+	(*cmd)->fles->order = NULL;
 	(*cmd)->next = NULL;
 }
 
