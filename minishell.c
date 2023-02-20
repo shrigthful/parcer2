@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/07 14:05:54 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/18 19:15:55 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,18 @@
 void	sigint_handler(int sig)
 {
 	sig = 1;
-	exit(1);//code if read line dont exist
-	write(1,"\n",1);
-	//rl_replace_line("", 1); code id readline exits
+	write(1, "\n", 1);
+	//rl_replace_line("", 1);
 	//rl_on_new_line();
 	//rl_redisplay();
-	vars.last_exit_sat = 1;
+	g_vars.last_exit_sat = 1;
 }
 
 void	sigauit_handler(int sig)
 {
+	//rl_replace_line("", 1);
+	//rl_on_new_line();
+	rl_redisplay();
 	(void)sig;
 }
 
@@ -34,34 +36,40 @@ void	init_signals(void)
 	signal(SIGQUIT, sigauit_handler);
 }
 
-void	setup_vars(int ac, char **av, char **env)
+void	turn_env_list(char **env, t_list **env_lst)
 {
-	vars.args.ac = ac;
-	vars.args.av = av;
-	vars.args.env = env;
-	vars.last_exit_sat = 0;
+	int	i;
+
+	i = 0;
+	while (env[i])
+	{
+		ft_lstadd_back(env_lst, ft_lstnew(ft_strdup(env[i])));
+		i++;
+	}
 }
 
 int	main(int ac, char **av, char **env)
 {
-	char	*line;
-	t_list	*lines;
+	char		*line;
+	t_list		*lines;
+	t_main_args	args;
 
 	lines = NULL;
-	setup_vars(ac, av, env);
+	setup_g_vars(ac, av, env, &args);
 	init_signals();
-
-	while (1)
+	while (1337)
 	{
-		line = readline(("minishell $> "));
+		line = get_line();
 		if (line == NULL)
 		{
-			write(1, "exit\n", 6);
-			exit(0);
+			write(1, "exit\n", 5);
+			if (g_vars.last_exit_sat == 1)
+				exit(g_vars.last_exit_sat);
+			exit(WEXITSTATUS(g_vars.last_exit_sat));
 		}
 		if (*line != 0)
 			add_history(line);
-		handle_line(line);
+		handle_line(line, &args);
 		free(line);
 	}
 	return (0);

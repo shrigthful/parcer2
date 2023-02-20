@@ -6,14 +6,13 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/30 19:38:55 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/19 16:58:08 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-
-void	free_io(void* ios)
+void	free_io(void *ios)
 {
 	free(((t_io *)ios)->file);
 	free(((t_io *)ios)->type);
@@ -41,6 +40,7 @@ void	free_arr(t_cmd **arr, void (*del)(void *))
 	del((*arr)->param);
 	ft_lstclear(&((*arr)->fles->input), free_io);
 	ft_lstclear(&((*arr)->fles->output), free_io);
+	ft_lstclear(&((*arr)->fles->order), free);
 	if ((*arr)->token != NULL)
 		free((*arr)->token);
 	free((*arr)->fles);

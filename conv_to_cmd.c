@@ -6,13 +6,13 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/30 17:57:17 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/19 16:59:20 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	insert_in_cmd(t_cmd	**cmd, t_list **lst, t_help h)
+void	insert_in_cmd(t_cmd **cmd, t_list **lst, t_help h)
 {
 	(*cmd)->param = get_params(h.params, *lst);
 	(*cmd)->cmd = (*cmd)->param[0];
@@ -51,6 +51,26 @@ t_cmd	*get_node(t_list **lst)
 	return (cmd);
 }
 
+
+void	set_order(t_cmd	*cmds, t_list *lst)
+{
+	t_range	*range;
+
+	while (lst)
+	{
+		range = (t_range *)lst->content;
+		if (range->type == 0)
+		{
+			if (*range->str == '|')
+				cmds = cmds->next;
+			else
+				insert_input_files(((t_range *)lst->next->content)->str,
+					range->str, &cmds->fles->order);
+		}
+		lst = lst->next;
+	}
+}
+
 t_cmd	*conv_to_cmd(t_list **lst)
 {
 	t_cmd	*cmds;
@@ -65,5 +85,6 @@ t_cmd	*conv_to_cmd(t_list **lst)
 	h = *lst;
 	while (h)
 		ft_lstadd_back2(&cmds, get_node(&h));
+	set_order(cmds, *lst);
 	return (cmds);
 }

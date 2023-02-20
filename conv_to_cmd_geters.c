@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   conv_to_cmd_geters.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/30 18:00:26 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/11 21:01:19 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	insert_input_files(char *str, char *type, t_list **lst)
 
 	io = malloc(sizeof(t_io));
 	if (io == NULL)
-		exit (1);
+		exit(1);
 	io->type = type;
 	io->file = str;
 	new = ft_lstnew(io);

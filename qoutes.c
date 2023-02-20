@@ -3,31 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   qoutes.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/07 14:03:57 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/12 16:28:11 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	insert(t_list **lst, char* str,int type, char space)
-{
-	t_range	*range;
-	t_list	*new;
-
-	range = malloc(sizeof(t_range));
-	if (range == NULL)
-		exit(1);
-	range->next_is_space = space;
-	range->type = type;
-	range->str = str;
-	new = ft_lstnew(range);
-	if (new == NULL)
-		exit(1);
-	ft_lstadd_back(lst, new);
-}
 
 int	insert_qoutes(t_list **lst, int i, char *line)
 {
@@ -45,12 +28,13 @@ int	insert_qoutes(t_list **lst, int i, char *line)
 			if (str == NULL && i - j - 1 > 0)
 				exit(1);
 			insert(lst, str, qoute, is_space(line[j + 1]));
-				return (j + 1);
+			return (j + 1);
 		}
 		j++;
 	}
 	write(2, "Error: unclosed qoutes ", 24);
 	write(2, &qoute, 1);
+	write(2, "\n", 1);
 	return (j);
 }
 
@@ -76,9 +60,16 @@ int	insert_symbol(t_list **lst, int i, char *line)
 
 int	stop_here(char *c, int i)
 {
-
-	if (check_is_symbol(c[i]) != 0)
+	if (c[i + 1] == 0)
+	{
+		if (check_is_symbol(c[i]) != 0)
 			return (1);
+	}
+	else
+	{
+		if (check_is_symbol(c[i]) != 0)
+			return (1);
+	}
 	if (is_space(c[i]) == 1)
 		return (1);
 	if (c[i] == '\'' || c[i] == '\"')
@@ -96,11 +87,15 @@ int	insert_string(t_list **lst, int i, char *line)
 	j = i;
 	while (line[j])
 	{
-		if (stop_here(line, j + 1) == 1 || line[j + 1] == 0)
+		if (line[j + 1] == 0)
 		{
-			str = ft_substr(line, i, j - i + 1);
-			if (str == NULL)
-				exit(1);
+			str = alloc_str2(i, j, line);
+			insert(lst, str, ' ', is_space(line[j + 1]));
+			return (j + 1);
+		}
+		if (stop_here(line, j + 1) == 1)
+		{
+			str = alloc_str2(i, j, line);
 			insert(lst, str, ' ', is_space(line[j + 1]));
 			return (j + 1);
 		}
@@ -109,7 +104,7 @@ int	insert_string(t_list **lst, int i, char *line)
 	return (ft_strlen(line));
 }
 
-t_list *qoutes_handling(char *line)
+t_list	*qoutes_handling(char *line)
 {
 	t_list	*lst;
 	int		i;

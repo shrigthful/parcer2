@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   replace_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/29 20:16:43 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/11 21:25:24 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-//xx delete is_valid
+
 char	*group_strs(char *start, char *var_vale, char *end)
 {
 	char	*join1;
@@ -60,10 +60,10 @@ int	replace_as_exit_status(char **str, int i)
 	end = ft_substr(*str, i + 1, 1);
 	if (start == NULL || end == NULL)
 		exit(1);
-	if (WIFEXITED(vars.last_exit_sat))
-		var_vale = ft_itoa(WEXITSTATUS(vars.last_exit_sat));
+	if (WIFEXITED(g_vars.last_exit_sat))
+		var_vale = ft_itoa(WEXITSTATUS(g_vars.last_exit_sat));
 	else
-		var_vale = ft_itoa(vars.last_exit_sat);
+		var_vale = ft_itoa(g_vars.last_exit_sat);
 	free(end);
 	end = ft_substr(*str, i + 2, ft_strlen(*str) - (i + 1));
 	free(*str);
@@ -104,11 +104,11 @@ void	replace_env(t_list **lst)
 	help = *lst;
 	while (help)
 	{
-		if (((t_range *)help->content)->type == '\"' ||
-			((t_range *)help->content)->type == ' ')
+		if (((t_range *)help->content)->type == '\"'
+			|| ((t_range *)help->content)->type == ' ')
 		{
 			change_str(&(((t_range *)help->content)->str),
-			((t_range *)help->content)->type);
+				((t_range *)help->content)->type);
 		}
 		help = help->next;
 	}

@@ -1,0 +1,66 @@
+env puis export puis env
+diff in outout + exit status;
+
+test =>. (only put . in command)
+echo $?
+minishell out put = 127
+bash out put = 2
+
+"" => laba9tha f parsing
+bash error
+mini prints exrcve
+
+
+test =>. (only put . in command)
+
+sleep 5 | exit
+exit printed;
+
+>a cat <b >>c
+
+mini creats a and c
+bash only creeats a
+
+bash-3.2$ >a ls >b >>c >d
+bash-3.2$
+
+d has ls content
+
+minishell $> >a ls >b >>c >d
+dup2in: Bad file descriptor
+
+d has ls content
+
+
+>a ls <machin >>c >d
+bash creats a
+minisell creates a c d
+
+echo 2 > out1 >> out2
+bash error + creats out1 and out 2
+mini error + no creating
+
+echo 2 >> out1 > out2
+same thing
+
+echo test > file test1
+bash printf test test 1
+on file 1
+
+mini prints error
+
+bash-3.2$ export var="  truc"; echo $var
+truc
+minishell $> echo $var
+  truc
+
+bash-3.2$ .//
+bash: .//: is a directory
+bash-3.2$ echo $?
+126
+
+minishell $> .//
+command not found
+minishell $> echo $?
+127
+minishell $> 

@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 11:57:56 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/07 14:02:57 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/19 16:35:49 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,18 @@
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1
 # endif
-
+# include <dirent.h>
 # include <errno.h>
 # include <fcntl.h>
+# include <limits.h>
+# include <readline/history.h>
+# include <readline/readline.h>
 # include <signal.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <string.h>
+# include <termios.h>
 # include <unistd.h>
-# include <readline/history.h>
-# include <readline/readline.h>
-# include <dirent.h>
 
 typedef struct s_list
 {
@@ -33,6 +35,12 @@ typedef struct s_list
 	struct s_list	*next;
 }					t_list;
 
+typedef struct s_fds
+{
+	int				fdin;
+	int				fdout;
+	int				pid;
+}					t_fds;
 typedef struct s_pids
 {
 	int				pid;
@@ -56,6 +64,7 @@ typedef struct s_in_out
 	t_list			*input;
 	t_list			*output;
 	t_list			*errfile;
+	t_list			*order;
 }					t_in_out;
 
 typedef struct s_cmd
@@ -79,14 +88,14 @@ typedef struct s_main_args
 	int				ac;
 	char			**av;
 	char			**env;
+	t_list			*env_lst;
 }					t_main_args;
 
-typedef struct s_vars
+typedef struct s_g_vars
 {
-	t_main_args		args;
-	pid_t			curent_pid;
+	t_main_args		*args;
 	int				last_exit_sat;
-}					t_vars;
+}					t_g_vars;
 
 typedef struct s_help
 {
@@ -96,7 +105,20 @@ typedef struct s_help
 	int				nodes;
 }					t_help;
 
-t_vars				vars;
+typedef struct s_norm_sake
+{
+	int				built;
+	int				tmpin;
+	int				tmpout;
+	int				i;
+	t_pids			*pids;
+	int				**fdpipe;
+	t_cmd			*tmp;
+}					t_norm_sake;
+
+t_g_vars			g_vars;
+
+typedef int			(*t_f)(t_cmd *cmd, t_main_args *main_args);
 
 // strings
 size_t				ft_strlen(const char *s);
@@ -120,17 +142,21 @@ int					ft_isdigit(int c);
 int					ft_isalpha(int c);
 int					ft_isalnum(int c);
 char				*ft_itoa(int n);
+//string6
+int					ft_toupset(int c);
+char				*get_line(void);
 //linked list
 t_list				*ft_lstnew(void *content);
 void				ft_lstclear(t_list **lst, void (*del)(void *));
 void				ft_lstadd_back(t_list **lst, t_list *new);
 t_list				*ft_lstlast(t_list *lst);
-//read line
-void				handle_line(char *line);
+int					ft_lstsize(t_list *lst);
 //step 1
 char				check_is_symbol(char s);
 int					is_space(char s);
 t_list				*qoutes_handling(char *line);
+char				*alloc_str2(int i, int j, char *line);
+void				insert(t_list **lst, char *str, int type, char space);
 //step 2
 void				replace_env(t_list **lst);
 char				*group_strs(char *start, char *var_vale, char *end);
@@ -141,15 +167,15 @@ void				ft_lstadd_back2(t_cmd **lst, t_cmd *new);
 void				ft_lstclear2(t_cmd **lst, void (*del)(void *));
 t_cmd				*ft_lstnew2(char *cmd, char **param);
 void				free_arr(t_cmd **arr, void (*del)(void *));
+void				insert_input_files(char *str, char *type, t_list **lst);
 
 //builtin_commands
-void				my_cd(t_cmd *cmd, t_main_args *main_args);
-void				my_echo(t_cmd *cmd, t_main_args *main_args);
-void				my_pwd(t_main_args *main_args);
-void				my_env(t_main_args *main_args);
-void				my_export(t_cmd *cmd, t_main_args *main_args);
-void				my_unset(t_cmd *cmd, t_main_args *main_args);
-void				my_exit(void);
+int					my_cd(t_cmd *cmd, t_main_args *main_args);
+int					my_pwd(t_cmd *cmd, t_main_args *main_args);
+int					my_env(t_cmd *cmd, t_main_args *main_args);
+int					my_export(t_cmd *cmd, t_main_args *main_args);
+int					my_unset(t_cmd *cmd, t_main_args *main_args);
+int					my_exit(t_cmd *cmd, t_main_args *main_args);
 // linked_list_pids
 t_pids				*ft_lstnew3(int pid);
 void				ft_lstclear3(t_pids **lst, void (*del)(void *));
@@ -157,11 +183,73 @@ void				ft_lstadd_back3(t_pids **lst, t_pids *new);
 t_pids				*ft_lstlast3(t_pids *lst);
 
 //execute
-void				execute(t_cmd *cmd, t_main_args *main_args);
+void				execute(t_cmd *cmd, t_main_args *main_args, int num_cmds);
 char				*bring_path(t_main_args *main_args, char *cmd);
-void				handle_builtins(t_cmd *cmd, t_main_args *main_args,
-						int *built);
+void				handle_builtins(t_cmd *cmd, int *built);
 char				*my_get_env(char *var, t_main_args *main_args);
+void				print_error(char *s);
+char				**mini_split(char *var);
+int					if_not_file(int i, char *cmd, int *built);
+
+//execute1
+int					count(char **param, int c);
+int					get_index(char *s, char c);
+int					arr_builtins(int i, t_cmd *cmd, t_main_args *main_args);
+
+//execute2
+int					here_doc(char **delimeter);
+int					file_out(t_list *outfiles);
+int					file_in(t_list *infiles);
+int					size_cmd(t_cmd *cmd);
+//execut3
+void				first_child(int *fdpipe, t_fds *fds, t_cmd *cmd);
+void				middle_child(int **fdpipe, t_fds *fds, t_cmd *cmd, int i);
+void				last_child(int *fdpipe, t_fds *fds, t_cmd *cmd);
+void				allocat_pipe(int num_cmds, t_norm_sake *norm);
+//execute4
+void				free_pipe(int i, int **f);
+void				dup2_and(t_fds fds);
+void				and_execute(t_main_args *main_args, t_cmd *cmd);
+void				dup2_and_excute(t_fds fds, t_main_args *main_args,
+						t_cmd *cmd);
+void				make_process(t_main_args *main_args, t_cmd *tmp, t_cmd *cmd,
+						t_norm_sake *norm);
+//execute5
+int					init_infile(t_fds fds, t_list *infiles);
+int					init_outfile(t_fds fds, t_list *outfiles);
+int					only_one(t_cmd *cmd, t_main_args *main_args, int *built);
+void				wait_process(t_pids *pids);
+void				begin(int num_cmds, t_norm_sake *norm, t_cmd *cmd);
+//builtin_cmds1
+void				free_2d(char **s);
+int					my_set_env(char *var, char *value, t_main_args *main_args);
+int					cd_home(char *home_dir, char *prev_dir,
+						t_main_args *main_args);
+int					cd_some_where(char *dir, char *prev_dir,
+						t_main_args *main_args);
+
+//builtin_cmds2
+int					check_flag(char *s);
+int					my_echo(t_cmd *cmd, t_main_args *main_args);
+int					there_equal(char *s);
+//builtin_cmds3
+int					check_valid(char *s);
+void				turn_list_env(t_main_args *main_args);
+void				print_export(t_main_args *main_args);
+int					change_value(char *var, char **key_value_var,
+						char **key_value, t_list *tmp);
+int					env_exist(t_main_args *main_args, char *var);
+//builtin_cmds4
+int					my_export_pt2(int *i, int *ret, t_cmd *cmd,
+						t_main_args *main_args);
+int					unset_valid(char *s);
+void				unset_var(t_list **lst, char *var);
+//minishell.c
+char				**ft_envdup(char **env);
+void				setup_g_vars(int ac, char **av, char **env,
+						t_main_args *args);
+void				turn_env_list(char **env, t_list **env_lst);
+
 //conv to cmd
 t_cmd				*conv_to_cmd(t_list **lst);
 //inits
@@ -176,8 +264,15 @@ t_list				*get_input_files(int count, t_list *lst);
 char				**get_params(int count, t_list *lst);
 //deleters
 void				free_arr(t_cmd **arr, void (*del)(void *));
-void				free_io(void* ios);
+void				free_io(void *ios);
 void				free_range_arr(void *rang);
 void				del_range(void *range);
+//ft_atoi
+int					ft_atoi(const char *str);
+//parsing1
+void				print_io(t_list *lst);
+void				print_cmds(t_cmd *lst);
+void				handle_line(char *line, t_main_args *args);
+void				join_lines(t_list **lst);
 
 #endif

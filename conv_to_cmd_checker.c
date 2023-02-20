@@ -3,25 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   conv_to_cmd_checker.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/30 17:59:40 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/12 16:59:11 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+void	error_print1(char *s)
+{
+	write(2, "syntax error near unexpected token ", 35);
+	write(2, s, ft_strlen(s));
+	write(2, "\n", 1);
+}
+
 int	check_return(int err, t_range *this, t_range *next)
 {
 	if (err == 1)
-		printf("bash:syntax error near unexpected token `newline'");
+		error_print1("newline");
 	if (err == 2)
-		printf("bash: syntax error near unexpected token `%s'",
-			next->str);
+		error_print1(next->str);
 	if (err == 3)
-		printf("bash: syntax error near unexpected token `%s'",
-			this->str);
+		error_print1(this->str);
 	return (-1);
 }
 

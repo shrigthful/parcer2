@@ -6,14 +6,13 @@
 /*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/01/28 11:27:55 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/12 17:07:12 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-
-void	ft_striteri(char *s, void (*f)(unsigned int, char*))
+void	ft_striteri(char *s, void (*f)(unsigned int, char *))
 {
 	size_t	i;
 
@@ -62,7 +61,6 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	return (c);
 }
 
-
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
 	size_t	i;
@@ -88,7 +86,8 @@ int	ft_strncmp1(const char *s1, const char *s2, size_t n)
 	unsigned int	i;
 
 	i = 0;
-	while (s1[i] == s2[i] && s1[i] && s2[i] && i < n)
+	while ((ft_toupset(s1[i]) == s2[i] \
+	|| s1[i] == s2[i]) && s1[i] && s2[i] && i < n)
 	{
 		i++;
 	}
