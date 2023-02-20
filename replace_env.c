@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   replace_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
+/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/11 21:25:24 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/20 20:42:00 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,18 +36,6 @@ char	*group_strs(char *start, char *var_vale, char *end)
 	free(join1);
 	free(end);
 	return (new_str);
-}
-
-int	replace_as_digit(char **str, int i, int type)
-{
-	if (type == ' ')
-	{
-		*str = NULL;
-		return (-1);
-	}
-	else
-		*str = ft_calloc(1, 1);
-	return (i);
 }
 
 int	replace_as_exit_status(char **str, int i)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   replace_env_alpha.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
+/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 20:52:13 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/11 21:25:38 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/20 20:42:26 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,4 +71,41 @@ int	replace_as_alpha(char **str, int i, int type)
 		}
 	}
 	return (replace_as_alpha2(str, i, type, j));
+}
+
+int	replace_as_digit2(char **str, int i)
+{
+	char	*start;
+	char	*end;
+
+	start = ft_substr(*str, 0, i);
+	if (start == NULL)
+		exit(1);
+	end = ft_substr(*str, i + 2, ft_strlen(*str) - (2 + i));
+	if (end == NULL)
+		exit(1);
+	free(*str);
+	*str = ft_strjoin(start, end);
+	if (*str == NULL)
+		exit(1);
+	free(start);
+	free(end);
+	return (i);
+}
+
+int	replace_as_digit(char **str, int i, int type)
+{
+	if (type == ' ' && (*str)[2] == 0)
+	{
+		free(*str);
+		*str = NULL;
+		return (-1);
+	}
+	else if (type == ' ' && (*str)[2] == 0)
+	{
+		free(*str);
+		*str = ft_calloc(1, 1);
+		return (-1);
+	}
+	return (replace_as_digit2(str, i));
 }

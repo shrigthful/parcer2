@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 21:08:33 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/19 14:54:42 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/20 20:41:29 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,28 +25,35 @@ int	check_null_start(t_list *lst, char *line)
 	return (0);
 }
 
+void	qoutes_stop(char *line2, t_list *lst)
+{
+	ft_lstclear(&lst, free_range_arr);
+	free(line2);
+}
+
 void	handle_line(char *line, t_main_args *args)
 {
 	char	*line2;
-	t_list	*lst;
 	t_cmd	*cmd;
-	int		num_cmds;
+	t_qoute	res;
 
 	if (*line == 0)
 		return ;
 	line2 = ft_strtrim(line, " \f\v\n\r\t");
 	if (line2 == NULL)
 		exit(1);
-	lst = qoutes_handling(line);
-	replace_env(&lst);
-	join_lines(&lst);
-	if (check_null_start(lst, line) != 0)
+	res = qoutes_handling(line);
+	if (res.err == 1)
+	{
+		qoutes_stop(line2, res.lst);
 		return ;
-	cmd = conv_to_cmd(&lst);
-	num_cmds = size_cmd(cmd);
+	}
+	replace_env(&res.lst);
+	join_lines(&res.lst);
+	cmd = conv_to_cmd(&res.lst);
 	if (cmd != NULL)
-		execute(cmd, args, num_cmds);
+		execute(cmd, args, size_cmd(cmd));
 	ft_lstclear2(&cmd, free);
-	ft_lstclear(&lst, free);
+	ft_lstclear(&res.lst, free);
 	free(line2);
 }

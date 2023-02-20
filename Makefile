@@ -1,6 +1,6 @@
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address
 RLFLAGS = -L/Users/jbalahce/.local/opt/homebrew/opt/readline/lib -lreadline
 INCLUDES = -I./minishell.h -I/Users/jbalahce/.local/opt/homebrew/opt/readline/include
 FILES = minishell.c \
@@ -33,7 +33,7 @@ FILES_EXEC = execute.c execute1.c execute2.c execute3.c execute4.c execute5.c \
 OFILES = $(FILES:.c=.o)
 OFILES_EXEC = $(FILES_EXEC:.c=.o)
 
-all : $(NAME)
+all : $(NAME) clean
 
 $(NAME) : $(OFILES) $(OFILES_EXEC)
 	$(CC) $(CFLAGS) $(RLFLAGS) $(OFILES) $(OFILES_EXEC) $(INCLUDES) -o $(NAME)

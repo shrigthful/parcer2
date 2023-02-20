@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   qoutes.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
+/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/12 16:28:11 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/20 19:06:05 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	insert_qoutes(t_list **lst, int i, char *line)
 	write(2, "Error: unclosed qoutes ", 24);
 	write(2, &qoute, 1);
 	write(2, "\n", 1);
-	return (j);
+	return (j * -1);
 }
 
 int	insert_symbol(t_list **lst, int i, char *line)
@@ -104,13 +104,15 @@ int	insert_string(t_list **lst, int i, char *line)
 	return (ft_strlen(line));
 }
 
-t_list	*qoutes_handling(char *line)
+t_qoute	qoutes_handling(char *line)
 {
 	t_list	*lst;
+	t_qoute	res;
 	int		i;
 
 	i = 0;
 	lst = NULL;
+	res.err = 0;
 	while (line[i])
 	{
 		if (is_space(line[i]) == 1)
@@ -121,6 +123,9 @@ t_list	*qoutes_handling(char *line)
 			i = insert_symbol(&lst, i, line);
 		else
 			i = insert_string(&lst, i, line);
+		if (i < 0)
+			qoute_err(&i, &res);
 	}
-	return (lst);
+	res.lst = lst;
+	return (res);
 }

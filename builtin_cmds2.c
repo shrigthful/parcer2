@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmds2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
+/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 20:36:43 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/11 22:40:15 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/20 17:42:30 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ int	my_echo(t_cmd *cmd, t_main_args *main_args)
 	i = 1;
 	if (main_args->ac > 1)
 	{
-		while ((cmd->param)[i] && check_flag((cmd->param)[i]))
+		while ((cmd->param)[i] && (cmd->param)[i][0]
+			&& check_flag((cmd->param)[i]))
 		{
 			is_flag = 1;
 			i++;

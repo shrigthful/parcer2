@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 11:57:56 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/20 16:21:52 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/20 20:40:22 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,19 @@ typedef struct s_list
 	struct s_list	*next;
 }					t_list;
 
+typedef struct s_qoute
+{
+	t_list			*lst;
+	int				err;
+}					t_qoute;
+
 typedef struct s_fds
 {
 	int				fdin;
 	int				fdout;
 	int				pid;
 }					t_fds;
+
 typedef struct s_pids
 {
 	int				pid;
@@ -146,6 +153,7 @@ char				*ft_itoa(int n);
 //string6
 int					ft_toupset(int c);
 char				*get_line(void);
+void				init_signals(void);
 //linked list
 t_list				*ft_lstnew(void *content);
 void				ft_lstclear(t_list **lst, void (*del)(void *));
@@ -155,13 +163,15 @@ int					ft_lstsize(t_list *lst);
 //step 1
 char				check_is_symbol(char s);
 int					is_space(char s);
-t_list				*qoutes_handling(char *line);
+t_qoute				qoutes_handling(char *line);
 char				*alloc_str2(int i, int j, char *line);
 void				insert(t_list **lst, char *str, int type, char space);
+void				qoute_err(int *i, t_qoute *res);
 //step 2
 void				replace_env(t_list **lst);
 char				*group_strs(char *start, char *var_vale, char *end);
 int					replace_as_alpha(char **str, int i, int type);
+int					replace_as_digit(char **str, int i, int type);
 //link2
 t_cmd				*ft_lstlast2(t_cmd *lst);
 void				ft_lstadd_back2(t_cmd **lst, t_cmd *new);

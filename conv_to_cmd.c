@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/20 16:10:45 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/20 20:36:17 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ t_cmd	*get_node(t_list **lst)
 		cmd->token = NULL;
 	return (cmd);
 }
-
 
 void	set_order(t_cmd	*cmds, t_list *lst)
 {

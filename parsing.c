@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
+/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/12 16:33:50 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/20 20:41:02 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,17 +38,27 @@ void	join_nodes(t_list **h)
 	t_list	*todel;
 	char	*new_str;
 	int		space;
+	t_range	*range;
 
 	todel = (*h)->next;
+	range = (t_range *)(*h)->content;
 	space = ((t_range *)todel->content)->next_is_space;
 	(*h)->next = todel->next;
-	new_str = ft_strjoin(((t_range *)(*h)->content)->str,
-			((t_range *)todel->content)->str);
-	((t_range *)(*h)->content)->next_is_space = space;
-	free(((t_range *)(*h)->content)->str);
+	if (((t_range *)todel->content)->str == NULL)
+	{
+		if (range->str != NULL)
+			new_str = ft_strdup(range->str);
+		else
+			new_str = NULL;
+	}
+	else
+		new_str = ft_strjoin(range->str,
+				((t_range *)todel->content)->str);
+	range->next_is_space = space;
+	free(range->str);
 	del_range(todel->content);
 	free(todel);
-	((t_range *)(*h)->content)->str = new_str;
+	range->str = new_str;
 }
 
 void	join_lines(t_list **lst)

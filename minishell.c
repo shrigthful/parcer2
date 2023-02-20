@@ -6,38 +6,11 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/20 16:29:53 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/20 20:39:25 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	sigint_handler(int sig)
-{
-	sig = 1;
-	write(1, "\n", 1);
-	if (g_vars.line_handled == 0)
-	{
-		rl_replace_line("", 1);
-		rl_on_new_line();
-		rl_redisplay();
-	}
-	g_vars.last_exit_sat = 1;
-}
-
-void	sigauit_handler(int sig)
-{
-	rl_replace_line("", 1);
-	rl_on_new_line();
-	rl_redisplay();
-	(void)sig;
-}
-
-void	init_signals(void)
-{
-	signal(SIGINT, sigint_handler);
-	signal(SIGQUIT, sigauit_handler);
-}
 
 void	turn_env_list(char **env, t_list **env_lst)
 {
@@ -49,6 +22,14 @@ void	turn_env_list(char **env, t_list **env_lst)
 		ft_lstadd_back(env_lst, ft_lstnew(ft_strdup(env[i])));
 		i++;
 	}
+}
+
+void	end_of_file(void)
+{
+	write(1, "exit\n", 5);
+	if (g_vars.last_exit_sat == 1)
+		exit(g_vars.last_exit_sat);
+	exit(WEXITSTATUS(g_vars.last_exit_sat));
 }
 
 int	main(int ac, char **av, char **env)
@@ -65,16 +46,13 @@ int	main(int ac, char **av, char **env)
 		g_vars.line_handled = 0;
 		line = get_line();
 		if (line == NULL)
-		{
-			write(1, "exit\n", 5);
-			if (g_vars.last_exit_sat == 1)
-				exit(g_vars.last_exit_sat);
-			exit(WEXITSTATUS(g_vars.last_exit_sat));
-		}
+			end_of_file();
 		if (*line != 0)
+		{
 			add_history(line);
-		g_vars.line_handled = 1;
-		handle_line(line, &args);
+			g_vars.line_handled = 1;
+			handle_line(line, &args);
+		}
 		free(line);
 	}
 	return (0);

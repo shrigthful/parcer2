@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   qoutes2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
+/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 21:18:57 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/11 21:26:45 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/20 20:41:42 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,10 @@ void	insert(t_list **lst, char *str, int type, char space)
 	if (new == NULL)
 		exit(1);
 	ft_lstadd_back(lst, new);
+}
+
+void	qoute_err(int *i, t_qoute *res)
+{
+	*i *= -1;
+	res->err = 1;
 }
