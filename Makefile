@@ -1,6 +1,6 @@
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror #-fsanitize=address
 RLFLAGS = -L/Users/jbalahce/.local/opt/homebrew/opt/readline/lib -lreadline
 INCLUDES = -I./minishell.h -I/Users/jbalahce/.local/opt/homebrew/opt/readline/include
 FILES = minishell.c \
@@ -20,6 +20,7 @@ FILES = minishell.c \
 	qoutes.c \
 	qoutes2.c \
 	replace_env.c \
+	replace_env2.c \
 	replace_env_alpha.c \
 	conv_to_cmd.c \
 	deleters.c \

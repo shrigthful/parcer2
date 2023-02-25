@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 20:52:13 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/20 20:42:26 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/21 17:20:05 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,12 @@ int	get_end_ofvar(char *str, int i)
 	return (j - i - 1);
 }
 
-int	replace_as_alpha2(char **str, int i, int type, int j)
+int	replace_as_alpha2(char **str, int i, int j)
 {
 	char	*start;
 	char	*var_vale;
 	char	*end;
 
-	(void)type;
 	start = ft_substr(*str, 0, i);
 	end = ft_substr(*str, i + 1, j);
 	if (start == NULL || end == NULL)
@@ -70,7 +69,7 @@ int	replace_as_alpha(char **str, int i, int type)
 			return (-1);
 		}
 	}
-	return (replace_as_alpha2(str, i, type, j));
+	return (replace_as_alpha2(str, i, j));
 }
 
 int	replace_as_digit2(char **str, int i)

@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/20 20:42:00 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/24 19:00:57 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,11 @@ void	replace_env(t_list **lst)
 		if (((t_range *)help->content)->type == '\"'
 			|| ((t_range *)help->content)->type == ' ')
 		{
-			change_str(&(((t_range *)help->content)->str),
-				((t_range *)help->content)->type);
+			if (((t_range *)help->content)->expendable == 0)
+			{
+				change_str(&(((t_range *)help->content)->str),
+					((t_range *)help->content)->type);
+			}
 		}
 		help = help->next;
 	}

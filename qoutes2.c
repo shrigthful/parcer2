@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 21:18:57 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/20 20:41:42 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/24 18:45:32 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void	insert(t_list **lst, char *str, int type, char space)
 	range->next_is_space = space;
 	range->type = type;
 	range->str = str;
+	range->expendable = 0;
 	new = ft_lstnew(range);
 	if (new == NULL)
 		exit(1);

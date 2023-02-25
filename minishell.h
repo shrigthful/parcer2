@@ -6,7 +6,7 @@
 /*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 11:57:56 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/20 20:40:22 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/24 18:37:50 by monabid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ typedef struct s_range
 	char			*str;
 	int				type;
 	int				next_is_space;
+	int				expendable;
 }					t_range;
 
 typedef struct s_io
@@ -169,6 +170,7 @@ void				insert(t_list **lst, char *str, int type, char space);
 void				qoute_err(int *i, t_qoute *res);
 //step 2
 void				replace_env(t_list **lst);
+void				del_dollar(t_list **lst);
 char				*group_strs(char *start, char *var_vale, char *end);
 int					replace_as_alpha(char **str, int i, int type);
 int					replace_as_digit(char **str, int i, int type);
