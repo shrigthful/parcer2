@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 11:57:56 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/24 18:37:50 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/25 20:45:23 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@
 # include <string.h>
 # include <termios.h>
 # include <unistd.h>
+# define CD_ER "cd: error retrieving current directory: "
+# define ROR "getcwd: cannot access parent directories: "
 
 typedef struct s_list
 {
@@ -35,24 +37,24 @@ typedef struct s_list
 	struct s_list	*next;
 }					t_list;
 
-typedef struct s_qoute
-{
-	t_list			*lst;
-	int				err;
-}					t_qoute;
-
 typedef struct s_fds
 {
 	int				fdin;
 	int				fdout;
 	int				pid;
 }					t_fds;
-
 typedef struct s_pids
 {
 	int				pid;
 	struct s_pids	*next;
 }					t_pids;
+
+typedef struct s_qoute
+{
+	t_list			*lst;
+	int				err;
+}					t_qoute;
+
 typedef struct s_range
 {
 	char			*str;
@@ -69,8 +71,6 @@ typedef struct s_io
 
 typedef struct s_in_out
 {
-	t_list			*input;
-	t_list			*output;
 	t_list			*errfile;
 	t_list			*order;
 }					t_in_out;
@@ -104,6 +104,7 @@ typedef struct s_g_vars
 	t_main_args		*args;
 	int				last_exit_sat;
 	int				line_handled;
+	pid_t			her_doc;
 }					t_g_vars;
 
 typedef struct s_help
@@ -120,14 +121,30 @@ typedef struct s_norm_sake
 	int				tmpin;
 	int				tmpout;
 	int				i;
+	int				index_here;
 	t_pids			*pids;
 	int				**fdpipe;
 	t_cmd			*tmp;
+	int				**hd_pipes;
+	int				num_heredoc;
 }					t_norm_sake;
 
 t_g_vars			g_vars;
 
 typedef int			(*t_f)(t_cmd *cmd, t_main_args *main_args);
+
+//heredoc_stuff
+void				disable_sigquit(struct termios *term);
+void				open_heredocs(t_cmd *cmd, t_norm_sake *norm,
+						struct termios term);
+void				allocat_hd_pipe(int num_heredoc, t_norm_sake *norm);
+void				close_hd_pipes(t_cmd *cmd, t_norm_sake *norm);
+
+//heredoc_stuff2
+int					count_heredocs(t_cmd *cmd);
+void				creat_pipes_heredoc(t_cmd *cmd, t_norm_sake *norm);
+void				loop_cmds(t_main_args *main_args, t_norm_sake *norm,
+						int num_cmds, t_cmd *cmd);
 
 // strings
 size_t				ft_strlen(const char *s);
@@ -154,7 +171,6 @@ char				*ft_itoa(int n);
 //string6
 int					ft_toupset(int c);
 char				*get_line(void);
-void				init_signals(void);
 //linked list
 t_list				*ft_lstnew(void *content);
 void				ft_lstclear(t_list **lst, void (*del)(void *));
@@ -170,10 +186,12 @@ void				insert(t_list **lst, char *str, int type, char space);
 void				qoute_err(int *i, t_qoute *res);
 //step 2
 void				replace_env(t_list **lst);
-void				del_dollar(t_list **lst);
 char				*group_strs(char *start, char *var_vale, char *end);
 int					replace_as_alpha(char **str, int i, int type);
 int					replace_as_digit(char **str, int i, int type);
+void				change_str(char **str, int type);
+void				del_dollar(t_list **lst);
+void				set_expandale(t_list **lst);
 //link2
 t_cmd				*ft_lstlast2(t_cmd *lst);
 void				ft_lstadd_back2(t_cmd **lst, t_cmd *new);
@@ -188,10 +206,9 @@ int					my_pwd(t_cmd *cmd, t_main_args *main_args);
 int					my_env(t_cmd *cmd, t_main_args *main_args);
 int					my_export(t_cmd *cmd, t_main_args *main_args);
 int					my_unset(t_cmd *cmd, t_main_args *main_args);
-int					my_exit(t_cmd *cmd, t_main_args *main_args);
+int					my_exit(t_cmd *cmd, t_main_args *main_args, int pid);
 // linked_list_pids
 t_pids				*ft_lstnew3(int pid);
-void				ft_lstclear3(t_pids **lst, void (*del)(void *));
 void				ft_lstadd_back3(t_pids **lst, t_pids *new);
 t_pids				*ft_lstlast3(t_pids *lst);
 
@@ -207,33 +224,45 @@ int					if_not_file(int i, char *cmd, int *built);
 //execute1
 int					count(char **param, int c);
 int					get_index(char *s, char c);
-int					arr_builtins(int i, t_cmd *cmd, t_main_args *main_args);
+int					arr_builtins(int i, t_cmd *cmd, t_main_args *main_args,
+						int pid);
 
 //execute2
-int					here_doc(char **delimeter);
-int					file_out(t_list *outfiles);
-int					file_in(t_list *infiles);
+int					here_doc(char **delimeter, int fd[2]);
+void				set_input(t_fds *fds, t_io *info_file, t_norm_sake *norm);
+void				set_output(t_fds *fds, t_io *info_file);
 int					size_cmd(t_cmd *cmd);
 //execut3
-void				first_child(int *fdpipe, t_fds *fds, t_cmd *cmd);
-void				middle_child(int **fdpipe, t_fds *fds, t_cmd *cmd, int i);
-void				last_child(int *fdpipe, t_fds *fds, t_cmd *cmd);
+void				first_child(int *fdpipe, t_fds *fds, t_cmd *cmd,
+						t_norm_sake *norm);
+void				middle_child(int **fdpipe, t_fds *fds, t_cmd *cmd,
+						t_norm_sake *norm);
+void				last_child(int *fdpipe, t_fds *fds, t_cmd *cmd,
+						t_norm_sake *norm);
 void				allocat_pipe(int num_cmds, t_norm_sake *norm);
+void				open_files(t_list *order_file, t_fds *fds,
+						t_norm_sake *norm);
 //execute4
 void				free_pipe(int i, int **f);
-void				dup2_and(t_fds fds);
-void				and_execute(t_main_args *main_args, t_cmd *cmd);
 void				dup2_and_excute(t_fds fds, t_main_args *main_args,
 						t_cmd *cmd);
 void				make_process(t_main_args *main_args, t_cmd *tmp, t_cmd *cmd,
 						t_norm_sake *norm);
+int					is_directory(char *cmd);
+void				print_exit(char *s, int status);
 //execute5
-int					init_infile(t_fds fds, t_list *infiles);
-int					init_outfile(t_fds fds, t_list *outfiles);
-int					only_one(t_cmd *cmd, t_main_args *main_args, int *built);
+int					init_infile(t_fds fds);
+int					init_outfile(t_fds fds);
+int					only_one(t_cmd *cmd, t_main_args *main_args, int *built,
+						t_norm_sake *norm);
 void				wait_process(t_pids *pids);
 void				begin(int num_cmds, t_norm_sake *norm, t_cmd *cmd);
+
+//execute6
+void				dup2_and(t_fds fds, t_cmd *cmd);
+void				and_execute(t_main_args *main_args, t_cmd *cmd);
 //builtin_cmds1
+char				*ft_remmove_plus(char *param);
 void				free_2d(char **s);
 int					my_set_env(char *var, char *value, t_main_args *main_args);
 int					cd_home(char *home_dir, char *prev_dir,
@@ -245,18 +274,24 @@ int					cd_some_where(char *dir, char *prev_dir,
 int					check_flag(char *s);
 int					my_echo(t_cmd *cmd, t_main_args *main_args);
 int					there_equal(char *s);
+
 //builtin_cmds3
 int					check_valid(char *s);
 void				turn_list_env(t_main_args *main_args);
 void				print_export(t_main_args *main_args);
-int					change_value(char *var, char **key_value_var,
-						char **key_value, t_list *tmp);
-int					env_exist(t_main_args *main_args, char *var);
+int					env_exist(t_main_args *main_args, char *var,
+						int (ft_func)(char *, char **, char **, t_list *));
 //builtin_cmds4
-int					my_export_pt2(int *i, int *ret, t_cmd *cmd,
+void				my_export_pt2(int *i, int *ret, t_cmd *cmd,
 						t_main_args *main_args);
 int					unset_valid(char *s);
 void				unset_var(t_list **lst, char *var);
+//builtin_cmds5
+void				ft_help(char **c);
+int					change_value(char *var, char **key_value_var,
+						char **key_value, t_list *tmp);
+int					append_value(char *var, char **key_value_var,
+						char **key_value, t_list *tmp);
 //minishell.c
 char				**ft_envdup(char **env);
 void				setup_g_vars(int ac, char **av, char **env,

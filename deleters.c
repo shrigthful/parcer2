@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   deleters.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/19 16:58:08 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/21 14:11:49 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 void	free_io(void *ios)
-{
+{	
 	free(((t_io *)ios)->file);
 	free(((t_io *)ios)->type);
 	free(ios);
@@ -38,9 +38,7 @@ void	free_arr(t_cmd **arr, void (*del)(void *))
 		i++;
 	}
 	del((*arr)->param);
-	ft_lstclear(&((*arr)->fles->input), free_io);
-	ft_lstclear(&((*arr)->fles->output), free_io);
-	ft_lstclear(&((*arr)->fles->order), free);
+	ft_lstclear(&((*arr)->fles->order), free_io);
 	if ((*arr)->token != NULL)
 		free((*arr)->token);
 	free((*arr)->fles);

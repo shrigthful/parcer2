@@ -6,11 +6,55 @@
 /*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 20:15:17 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/12 16:16:12 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/25 02:24:44 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	set_output(t_fds *fds, t_io *info_file)
+{
+	if (!ft_strncmp(info_file->type, ">>", 2))
+	{
+		fds->fdout >= 0 && close(fds->fdout);
+		fds->fdout = open(info_file->file, O_RDWR | O_APPEND | O_CREAT, 0644);
+		if (fds->fdout == -1)
+		{
+			perror(info_file->file);
+			exit(1);
+		}
+	}
+	else if (!ft_strncmp(info_file->type, ">", 2))
+	{
+		fds->fdout >= 0 && close(fds->fdout);
+		fds->fdout = open(info_file->file, O_RDWR | O_TRUNC | O_CREAT, 0644);
+		if (fds->fdout == -1)
+		{
+			perror(info_file->file);
+			exit(1);
+		}
+	}
+}
+
+void	set_input(t_fds *fds, t_io *info_file, t_norm_sake *norm)
+{
+	if (!ft_strncmp(info_file->type, "<<", 2))
+	{
+		fds->fdin >= 0 && close(fds->fdin);
+		fds->fdin = (norm->hd_pipes)[norm->index_here][0];
+		(norm->index_here) += 1;
+	}
+	else if (!ft_strncmp(info_file->type, "<", 2))
+	{
+		fds->fdin >= 0 && close(fds->fdin);
+		fds->fdin = open(info_file->file, O_RDONLY);
+		if (fds->fdin == -1)
+		{
+			perror(info_file->file);
+			exit(1);
+		}
+	}
+}
 
 char	*bring_path(t_main_args *main_args, char *cmd)
 {
@@ -21,7 +65,10 @@ char	*bring_path(t_main_args *main_args, char *cmd)
 
 	path_value = my_get_env("PATH", main_args);
 	if (!path_value)
-		print_error("there is no PATH variable");
+	{
+		write(2, cmd, ft_strlen(cmd));
+		(write(2, ": No such file or directory\n", 29), exit(127));
+	}
 	splited_path = ft_split(path_value, ':');
 	if (!cmd || cmd[0] == '/' || cmd[0] == '.')
 		return (NULL);
@@ -38,79 +85,32 @@ char	*bring_path(t_main_args *main_args, char *cmd)
 	return (NULL);
 }
 
-int	here_doc(char **delimeter)
+int	here_doc(char **delimeter, int fd[2])
 {
 	char	*here_line;
-	int		fd[2];
+	char	*tmp;
 
-	pipe(fd);
 	here_line = *delimeter;
 	*delimeter = ft_strjoin(here_line, "\n");
 	free(here_line);
 	while (1)
 	{
-		write(1, ">", 1);
-		here_line = get_next_line(0);
+		here_line = readline("> ");
+		tmp = here_line;
+		here_line && (here_line = ft_strjoin(tmp, "\n"));
+		free(tmp);
 		if (!here_line || !ft_strncmp(*delimeter, here_line,
 				ft_strlen(*delimeter)))
+		{
+			free(here_line);
 			break ;
+		}
+		change_str(&here_line, '\"');
 		write(fd[1], here_line, ft_strlen(here_line));
 		free(here_line);
 	}
 	close(fd[1]);
 	return (fd[0]);
-}
-
-int	file_out(t_list *outfiles)
-{
-	t_list	*tmp;
-	int		fdout;
-	int		ret;
-	t_io	*file_info;
-
-	ret = -1;
-	tmp = outfiles;
-	while (tmp)
-	{
-		file_info = tmp->content;
-		if (ft_strncmp(file_info->type, ">>", 2))
-			fdout = open(file_info->file, O_RDWR | O_TRUNC | O_CREAT, 0644);
-		else
-			fdout = open(file_info->file, O_RDWR | O_APPEND | O_CREAT, 0644);
-		close(ret);
-		ret = fdout;
-		tmp = tmp->next;
-	}
-	return (ret);
-}
-
-int	file_in(t_list *infiles)
-{
-	int		fdin;
-	int		ret;
-	int		failed;
-	t_list	*tmp;
-	t_io	*file_info;
-
-	failed = 0;
-	ret = -1;
-	tmp = infiles;
-	while (tmp)
-	{
-		file_info = tmp->content;
-		if (ft_strncmp(file_info->type, "<<", 2))
-			fdin = open(file_info->file, O_RDONLY);
-		else
-			fdin = here_doc(&file_info->file);
-		if (fdin == -1)
-			failed = 1;
-		close(ret);
-		ret = fdin;
-		tmp = tmp->next;
-	}
-	if (failed)
-		return (-1);
-	return (ret);
 }
 
 int	size_cmd(t_cmd *cmd)

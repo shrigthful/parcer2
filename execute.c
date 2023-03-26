@@ -6,7 +6,7 @@
 /*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/22 21:42:14 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/12 17:06:37 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/25 15:37:15 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,35 +46,54 @@ void	begin(int num_cmds, t_norm_sake *norm, t_cmd *cmd)
 	norm->i = 0;
 }
 
-void	finish(int num_cmds, t_norm_sake norm)
+void	finish(int num_cmds, t_norm_sake norm, int i)
 {
-	free_pipe(num_cmds, norm.fdpipe);
-	dup2(norm.tmpin, 0);
-	close(norm.tmpin);
-	dup2(norm.tmpout, 1);
-	close(norm.tmpout);
-	wait_process(norm.pids);
+	int	j;
+
+	j = 0;
+	while (j < norm.num_heredoc)
+	{
+		(norm.hd_pipes)[j][0] != -1 && close((norm.hd_pipes)[j][0]);
+		(norm.hd_pipes)[j][1] != -1 && close((norm.hd_pipes)[j][1]);
+		j++;
+	}
+	free_pipe(norm.num_heredoc, norm.hd_pipes);
+	if (i)
+	{
+		free_pipe(num_cmds, norm.fdpipe);
+		dup2(norm.tmpin, 0);
+		close(norm.tmpin);
+		dup2(norm.tmpout, 1);
+		close(norm.tmpout);
+		wait_process(norm.pids);
+	}
 }
 
 void	execute(t_cmd *cmd, t_main_args *main_args, int num_cmds)
 {
-	t_norm_sake	norm;
+	t_norm_sake		norm;
+	int				pid;
+	int				status;
+	struct termios	old;
 
-	begin(num_cmds, &norm, cmd);
-	while (norm.tmp)
+	tcgetattr(0, &old);
+	creat_pipes_heredoc(cmd, &norm);
+	pid = fork();
+	g_vars.her_doc = pid;
+	if (pid == 0)
+		open_heredocs(cmd, &norm, old);
+	else
 	{
-		main_args->ac = count(norm.tmp->param, 0);
-		if (num_cmds == 1)
-			g_vars.last_exit_sat = only_one(norm.tmp, main_args, &norm.built);
-		if (norm.i < num_cmds - 1)
-			pipe(norm.fdpipe[norm.i]);
-		if (norm.built == -1 || num_cmds > 1)
+		waitpid(pid, &status, 0);
+		tcsetattr(0, TCSANOW, &old);
+		close_hd_pipes(cmd, &norm);
+		if (WEXITSTATUS(status) == 0)
 		{
-			make_process(main_args, norm.tmp, cmd, &norm);
-			if (norm.i < num_cmds - 1)
-				(norm.i)++;
+			begin(num_cmds, &norm, cmd);
+			loop_cmds(main_args, &norm, num_cmds, cmd);
+			finish(num_cmds, norm, 1);
 		}
-		norm.tmp = norm.tmp->next;
+		else
+			finish(num_cmds, norm, 0);
 	}
-	finish(num_cmds, norm);
 }

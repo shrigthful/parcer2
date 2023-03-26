@@ -3,18 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   execute5.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 20:25:21 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/20 18:53:26 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/24 18:09:45 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	init_infile(t_fds fds, t_list *infiles)
+int	init_infile(t_fds fds)
 {
-	fds.fdin = file_in(infiles);
 	if (fds.fdin == -1)
 	{
 		write(2, "No such file or directory\n", 26);
@@ -26,9 +25,8 @@ int	init_infile(t_fds fds, t_list *infiles)
 	return (0);
 }
 
-int	init_outfile(t_fds fds, t_list *outfiles)
+int	init_outfile(t_fds fds)
 {
-	fds.fdout = file_out(outfiles);
 	if (fds.fdout == -1)
 	{
 		write(2, "No such file or directory\n", 26);
@@ -40,30 +38,30 @@ int	init_outfile(t_fds fds, t_list *outfiles)
 	return (0);
 }
 
-int	only_one(t_cmd *cmd, t_main_args *main_args, int *built)
+int	only_one(t_cmd *cmd, t_main_args *main_args, int *built, t_norm_sake *norm)
 {
 	t_fds	fds;
-	t_list	*infiles;
-	t_list	*outfiles;
+	t_list	*order_file;
 
+	order_file = cmd->fles->order;
 	fds.fdin = 0;
 	fds.fdout = 0;
-	infiles = cmd->fles->input;
-	outfiles = cmd->fles->output;
+	fds.pid = 1;
 	handle_builtins(cmd, built);
 	if (*built == -1)
 		return (0);
-	if (infiles)
+	open_files(order_file, &fds, norm);
+	if (fds.fdin != -2)
 	{
-		if (init_infile(fds, infiles))
+		if (init_infile(fds))
 			return (1);
 	}
-	if (outfiles)
+	if (fds.fdout != -2)
 	{
-		if (init_outfile(fds, infiles))
+		if (init_outfile(fds))
 			return (1);
 	}
-	return (arr_builtins(*built, cmd, main_args));
+	return (arr_builtins(*built, cmd, main_args, fds.pid));
 }
 
 void	setup_g_vars(int ac, char **av, char **env, t_main_args *args)
@@ -78,6 +76,7 @@ void	setup_g_vars(int ac, char **av, char **env, t_main_args *args)
 	args->env_lst = env_lst;
 	g_vars.last_exit_sat = 0;
 	g_vars.args = args;
+	g_vars.her_doc = -1;
 }
 
 char	**ft_envdup(char **env)

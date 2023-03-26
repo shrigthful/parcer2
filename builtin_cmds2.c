@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmds2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 20:36:43 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/20 17:42:30 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/25 17:27:01 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,16 @@ int	my_pwd(t_cmd *cmd, t_main_args *main_args)
 	(void)main_args;
 	(void)cmd;
 	cwd = getcwd(NULL, 0);
-	printf("%s\n", cwd);
-	free(cwd);
+	if (cwd)
+	{
+		printf("%s\n", cwd);
+		free(cwd);
+	}
+	else
+	{
+		cwd = my_get_env("PWD", main_args);
+		printf("%s\n", cwd);
+	}
 	return (0);
 }
 

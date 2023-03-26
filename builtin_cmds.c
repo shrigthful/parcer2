@@ -6,24 +6,45 @@
 /*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 23:21:17 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/11 20:50:01 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/25 20:44:43 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+char	*ft_remmove_plus(char *param)
+{
+	char	*str;
+	char	**h;
+
+	h = mini_split(param);
+	ft_help(h);
+	str = h[1];
+	h[1] = ft_strjoin("=", h[1]);
+	free(str);
+	str = ft_strjoin(h[0], h[1]);
+	free_2d(h);
+	free(param);
+	return (str);
+}
+
 int	my_unset(t_cmd *cmd, t_main_args *main_args)
 {
 	static int	i;
 	static int	ret;
+	int			en;
 
+	en = 1;
 	if (!i)
 		ret = 0;
 	if (main_args->ac > 1)
 	{
 		if (unset_valid((cmd->param)[1 + i]))
+		{
+			en = 0;
 			ret = 1;
-		if (!ret)
+		}
+		if (!ret || en)
 			unset_var(&(main_args->env_lst), (cmd->param)[1 + i]);
 		i++;
 		(main_args->ac)--;
@@ -47,14 +68,17 @@ void	my_exit_pt2(t_cmd *cmd)
 		i++;
 	if (cmd->param[1][i])
 	{
-		write(2, "numeric argument required\n", 26);
+		write(2, "exit: ", 6);
+		write(2, cmd->param[1], ft_strlen(cmd->param[1]));
+		write(2, ": numeric argument required\n", 28);
 		exit(255);
 	}
 }
 
-int	my_exit(t_cmd *cmd, t_main_args *main_args)
+int	my_exit(t_cmd *cmd, t_main_args *main_args, int pid)
 {
-	write(2, "exit\n", 5);
+	if (pid != 0)
+		write(2, "exit\n", 5);
 	if (main_args->ac != 1)
 		my_exit_pt2(cmd);
 	if (main_args->ac == 2)
@@ -66,9 +90,21 @@ int	my_exit(t_cmd *cmd, t_main_args *main_args)
 	}
 	else
 	{
-		if (g_vars.last_exit_sat == 1)
-			exit(g_vars.last_exit_sat);
-		exit(WEXITSTATUS(g_vars.last_exit_sat));
+		if (pid != 0)
+		{
+			if (g_vars.last_exit_sat == 1)
+				exit(g_vars.last_exit_sat);
+			exit(WEXITSTATUS(g_vars.last_exit_sat));
+		}
+		else
+			exit(0);
 	}
 	return (0);
+}
+
+void	print_error(char *s)
+{
+	write(2, s, ft_strlen(s));
+	write(2, "\n", 1);
+	exit(1);
 }

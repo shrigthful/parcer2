@@ -6,7 +6,7 @@
 /*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 20:22:32 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/11 20:22:54 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/25 15:29:36 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,28 +25,30 @@ void	free_pipe(int i, int **f)
 	free(f);
 }
 
-void	dup2_and(t_fds fds)
+void	print_exit(char *s, int status)
 {
-	if (dup2(fds.fdin, 0) == -1)
-		perror("dup2in");
-	close(fds.fdin);
-	if (dup2(fds.fdout, 1) == -1)
-		perror("dup2out");
-	close(fds.fdout);
+	write(2, s, ft_strlen(s));
+	exit(status);
 }
 
-void	and_execute(t_main_args *main_args, t_cmd *cmd)
+int	is_directory(char *cmd)
 {
-	char	*cmd1;
+	int	i;
+	int	yes;
 
-	cmd1 = bring_path(main_args, cmd->cmd);
-	if (!cmd1)
+	i = 0;
+	yes = 0;
+	while (cmd[i])
 	{
-		write(2, "command not found\n", 18);
-		exit(127);
+		if (cmd[i] != '/' && cmd[i] != '.')
+			return (0);
+		if (cmd[i] == '/')
+			yes = 1;
+		i++;
 	}
-	if (execve(cmd1, cmd->param, main_args->env) == -1)
-		print_error("execve");
+	if (yes)
+		return (1);
+	return (0);
 }
 
 void	dup2_and_excute(t_fds fds, t_main_args *main_args, t_cmd *cmd)
@@ -54,21 +56,21 @@ void	dup2_and_excute(t_fds fds, t_main_args *main_args, t_cmd *cmd)
 	int	built;
 
 	built = 0;
-	dup2_and(fds);
+	dup2_and(fds, cmd);
 	if (!access(cmd->cmd, F_OK))
 	{
 		handle_builtins(cmd, &built);
 		if (built == -1)
 			execve(cmd->cmd, cmd->param, main_args->env);
 		else
-			arr_builtins(built, cmd, main_args);
+			arr_builtins(built, cmd, main_args, fds.pid);
 	}
 	else
 	{
 		built = 0;
 		handle_builtins(cmd, &built);
 		if (built != -1)
-			arr_builtins(built, cmd, main_args);
+			arr_builtins(built, cmd, main_args, fds.pid);
 	}
 	if (built == -1 && cmd->cmd)
 		and_execute(main_args, cmd);
@@ -86,11 +88,11 @@ void	make_process(t_main_args *main_args, t_cmd *tmp, t_cmd *cmd,
 	else if (fds.pid == 0)
 	{
 		if (tmp == cmd)
-			first_child((norm->fdpipe)[norm->i], &fds, tmp);
+			first_child((norm->fdpipe)[norm->i], &fds, tmp, norm);
 		else if (tmp->next)
-			middle_child((norm->fdpipe), &fds, tmp, norm->i);
+			middle_child((norm->fdpipe), &fds, tmp, norm);
 		else
-			last_child((norm->fdpipe)[norm->i - 1], &fds, tmp);
+			last_child((norm->fdpipe)[norm->i - 1], &fds, tmp, norm);
 		dup2_and_excute(fds, main_args, tmp);
 	}
 	else

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   conv_to_cmd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: monabid <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 16:44:03 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/20 20:36:17 by monabid          ###   ########.fr       */
+/*   Updated: 2023/02/21 14:09:41 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@ void	insert_in_cmd(t_cmd **cmd, t_list **lst, t_help h)
 	if ((*cmd)->fles == NULL)
 		exit(0);
 	(*cmd)->fles->errfile = NULL;
-	(*cmd)->fles->input = get_input_files(h.infiles, *lst);
-	(*cmd)->fles->output = get_output_files(h.outfiles, *lst);
 	(*cmd)->fles->order = NULL;
 	(*cmd)->next = NULL;
 }
@@ -52,7 +50,7 @@ t_cmd	*get_node(t_list **lst)
 	return (cmd);
 }
 
-void	set_order(t_cmd	*cmds, t_list *lst)
+void	set_order(t_cmd *cmds, t_list *lst)
 {
 	t_range	*range;
 
@@ -65,7 +63,8 @@ void	set_order(t_cmd	*cmds, t_list *lst)
 				cmds = cmds->next;
 			else
 				insert_input_files(((t_range *)lst->next->content)->str,
-					range->str, &cmds->fles->order);
+					range->str,
+					&cmds->fles->order);
 		}
 		lst = lst->next;
 	}

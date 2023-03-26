@@ -6,27 +6,39 @@
 /*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 20:41:49 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/11 20:51:45 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/25 20:44:30 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	my_export_pt2(int *i, int *ret, t_cmd *cmd, t_main_args *main_args)
+void	my_export_pt2(int *i, int *ret, t_cmd *cmd, t_main_args *main_args)
 {
 	char	*param;
+	int		p;
+	int		en;
 
+	en = 1;
 	param = ft_strdup((cmd->param)[*i + 1]);
-	if (check_valid(param))
-		*ret = 1;
-	if (!(*ret))
+	p = check_valid(param);
+	if (p == 1)
 	{
-		if (env_exist(main_args, param))
+		en = 0;
+		*ret = 1;
+	}
+	if (p == 2)
+	{
+		if (env_exist(main_args, param, append_value))
+			ft_lstadd_back(&(main_args->env_lst), \
+				ft_lstnew(ft_remmove_plus(param)));
+	}
+	else if (!(*ret) || en)
+	{
+		if (env_exist(main_args, param, change_value))
 			ft_lstadd_back(&(main_args->env_lst), ft_lstnew(param));
 	}
 	else
 		free(param);
-	return (*ret);
 }
 
 int	my_export(t_cmd *cmd, t_main_args *main_args)
@@ -38,7 +50,7 @@ int	my_export(t_cmd *cmd, t_main_args *main_args)
 		ret = 0;
 	if (main_args->ac > 1)
 	{
-		ret = my_export_pt2(&i, &ret, cmd, main_args);
+		my_export_pt2(&i, &ret, cmd, main_args);
 		i++;
 		(main_args->ac)--;
 		if (main_args->ac > 1)

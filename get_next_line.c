@@ -5,102 +5,127 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/11 11:57:08 by monabid           #+#    #+#             */
-/*   Updated: 2023/02/11 20:53:18 by jbalahce         ###   ########.fr       */
+/*   Created: 2022/11/03 13:22:01 by jbalahce          #+#    #+#             */
+/*   Updated: 2023/02/22 21:58:32 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	ft_append_buffer(int fd, char **buffer, int *i)
+char	*after_nl(char *s)
 {
-	int		num;
-	char	*h;
-	char	*new;
-
-	*i = 0;
-	h = ft_calloc(BUFFER_SIZE + 1, 1);
-	num = read(fd, h, BUFFER_SIZE);
-	if (num > 0)
-	{
-		*i = 1;
-		new = ft_strjoin(*buffer, h);
-		free(*buffer);
-		*buffer = new;
-	}
-	free(h);
-}
-
-void	remove_line_from_buffer(char **buffer)
-{
-	char	*new;
-	char	*h;
+	char	*p;
 	int		i;
 	int		j;
 
-	if (*buffer != NULL)
+	i = 0;
+	j = ft_strlen(s);
+	if (!s)
+		return (NULL);
+	while (s[i] != '\n' && s[i])
+		i++;
+	if (s[i] == '\0')
 	{
-		h = ft_strchr(*buffer, '\n');
-		if (h != NULL)
-		{
-			if (h[1])
-			{
-				i = ft_strlen(h + 1);
-				j = 0;
-				new = ft_strjoin(NULL, h + 1);
-				free(*buffer);
-				*buffer = new;
-				return ;
-			}
-		}
-		free(*buffer);
-		*buffer = NULL;
+		free(s);
+		return (NULL);
 	}
+	p = malloc(sizeof(char) * (j - i));
+	if (!p)
+		return (NULL);
+	j = 0;
+	i++;
+	while (s[i])
+		p[j++] = s[i++];
+	p[j] = '\0';
+	free (s);
+	return (p);
 }
 
-char	*get_line_from_buffer(char **buffer, int fd)
+char	*befor_nl(char *s)
 {
-	char	*h;
-	char	*line;
+	char	*p;
 	int		i;
 
+	i = 0;
+	if (!s)
+		return (NULL);
+	while (s[i] != '\n' && s[i])
+		i++;
+	if (s[0] == '\0')
+		return (NULL);
+	p = malloc(sizeof(char) * i + 2);
+	if (!p)
+		return (NULL);
+	i = 0;
+	while (s[i] != '\n' && s[i])
+	{
+		p[i] = s[i];
+		i++;
+	}
+	if (s[i] == '\n')
+		p[i++] = '\n';
+	p[i] = '\0';
+	return (p);
+}
+
+int	check_nl(char *s)
+{
+	if (!s)
+		return (0);
+	while (*s)
+	{
+		if (*s == '\n')
+			return (1);
+		s++;
+	}
+	return (0);
+}
+
+char	*ft_read(int fd, char *buff, char *s, char *temp)
+{
+	int	i;
+
 	i = 1;
-	line = NULL;
-	h = ft_strchr(*buffer, '\n');
-	while (h == NULL && i == 1)
+	while (i != 0)
 	{
-		ft_append_buffer(fd, buffer, &i);
-		h = ft_strchr(*buffer, '\n');
+		i = read(fd, buff, BUFFER_SIZE);
+		if (i == -1)
+		{
+			free(s);
+			s = 0;
+			free(buff);
+			return (NULL);
+		}
+		buff[i] = '\0';
+		temp = s;
+		if (!temp)
+			temp = ft_strdup("");
+		s = ft_strjoin(temp, buff);
+		free(temp);
+		if (check_nl(s))
+			break ;
 	}
-	if (h != NULL)
-	{
-		i = -1;
-		line = malloc(h - *buffer + 2);
-		while (i++ < h - *buffer)
-			line[i] = (*buffer)[i];
-		line[i] = 0;
-	}
-	else
-		line = ft_strjoin(NULL, *buffer);
-	return (line);
+	free(buff);
+	return (s);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*buffer;
-	char		*line;
-	int			i;
+	static char	*s;
+	char		*buff;
+	char		*bnl;
+	char		*temp;
 
-	i = 0;
-	line = NULL;
-	if (buffer == NULL)
-	{
-		ft_append_buffer(fd, &buffer, &i);
-		if (i == 0)
-			return (NULL);
-	}
-	if (buffer != NULL)
-		line = get_line_from_buffer(&buffer, fd);
-	remove_line_from_buffer(&buffer);
-	return (line);
+	temp = NULL;
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	buff = malloc(sizeof(char) * (BUFFER_SIZE + (size_t)1));
+	if (!buff)
+		return (NULL);
+	s = ft_read(fd, buff, s, temp);
+	if (!s)
+		return (NULL);
+	bnl = befor_nl(s);
+	s = after_nl(s);
+	return (bnl);
 }

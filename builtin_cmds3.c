@@ -6,7 +6,7 @@
 /*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 20:38:54 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/11 20:39:08 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/25 20:43:39 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ int	check_valid(char *s)
 	}
 	while (s[i] && s[i] != '=')
 	{
+		if (s[i + 1] && s[i] == '+' && s[i + 1] == '=')
+			return (2);
 		if (!ft_isalnum(s[i]))
 		{
 			write(2, "export: ", 8);
@@ -74,27 +76,14 @@ void	print_export(t_main_args *main_args)
 	}
 }
 
-int	change_value(char *var, char **key_value_var, char **key_value, t_list *tmp)
+void	free2d_assign(char ***key_value, t_list	*tmp)
 {
-	if (key_value_var[1] != NULL)
-	{
-		if ((key_value_var[1][0] == '\0' && key_value[1] == NULL)
-			|| key_value_var[1][0] != '\0')
-		{
-			free(tmp->content);
-			tmp->content = var;
-		}
-		else
-			free(var);
-	}
-	else
-		free(var);
-	free_2d(key_value_var);
-	free_2d(key_value);
-	return (0);
+	free_2d(*key_value);
+	*key_value = mini_split(tmp->content);
 }
 
-int	env_exist(t_main_args *main_args, char *var)
+int	env_exist(t_main_args *main_args, char *var, int (ft_func)(char *, char **,
+			char **, t_list *))
 {
 	int		i;
 	char	**key_value;
@@ -102,21 +91,21 @@ int	env_exist(t_main_args *main_args, char *var)
 	t_list	*tmp;
 
 	tmp = main_args->env_lst;
+	if (!tmp)
+		return (1);
 	i = 0;
 	key_value = mini_split(tmp->content);
 	key_value_var = mini_split(var);
+	ft_help(key_value_var);
 	while (tmp && ft_strncmp(key_value[0], key_value_var[0],
 			ft_strlen(key_value_var[0]) + 1))
 	{
 		tmp = tmp->next;
 		if (tmp)
-		{
-			free_2d(key_value);
-			key_value = mini_split(tmp->content);
-		}
+			free2d_assign(&key_value, tmp);
 	}
 	if (tmp)
-		return (change_value(var, key_value_var, key_value, tmp));
+		return (ft_func(var, key_value_var, key_value, tmp));
 	(free_2d(key_value), free_2d(key_value_var));
 	return (1);
 }

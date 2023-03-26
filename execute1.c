@@ -6,7 +6,7 @@
 /*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 20:15:17 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/12 17:04:54 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/20 18:03:11 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	get_index(char *s, char c)
 	return (ret);
 }
 
-int	arr_builtins(int i, t_cmd *cmd, t_main_args *main_args)
+int	arr_builtins(int i, t_cmd *cmd, t_main_args *main_args, int pid)
 {
 	t_f	builtin[8];
 
@@ -44,8 +44,10 @@ int	arr_builtins(int i, t_cmd *cmd, t_main_args *main_args)
 	builtin[2] = my_env;
 	builtin[3] = my_unset;
 	builtin[4] = my_cd;
-	builtin[5] = my_exit;
+	builtin[5] = NULL;
 	builtin[6] = my_pwd;
+	if (i == 5)
+		return (my_exit(cmd, main_args, pid));
 	return (builtin[i](cmd, main_args));
 }
 

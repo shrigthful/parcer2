@@ -6,7 +6,7 @@
 /*   By: jbalahce <jbalahce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 20:33:12 by jbalahce          #+#    #+#             */
-/*   Updated: 2023/02/11 23:08:09 by jbalahce         ###   ########.fr       */
+/*   Updated: 2023/02/20 15:25:46 by jbalahce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,8 +89,7 @@ int	cd_some_where(char *dir, char *prev_dir, t_main_args *main_args)
 		cwd = getcwd(NULL, 0);
 		if (!cwd)
 		{
-			perror("cd: error retrieving current directory: \
-					getcwd: cannot access parent directories");
+			perror(CD_ER ROR);
 			return (1);
 		}
 		else

@@ -1,6 +1,6 @@
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror #-fsanitize=address
+CFLAGS = -Wall -Wextra -Werror
 RLFLAGS = -L/Users/jbalahce/.local/opt/homebrew/opt/readline/lib -lreadline
 INCLUDES = -I./minishell.h -I/Users/jbalahce/.local/opt/homebrew/opt/readline/include
 FILES = minishell.c \
@@ -20,8 +20,8 @@ FILES = minishell.c \
 	qoutes.c \
 	qoutes2.c \
 	replace_env.c \
-	replace_env2.c \
 	replace_env_alpha.c \
+	replace_env_helper.c \
 	conv_to_cmd.c \
 	deleters.c \
 	conv_to_cmd_init.c \
@@ -29,12 +29,14 @@ FILES = minishell.c \
 	conv_to_cmd_geters.c \
 	ft_atoi.c \
 
-FILES_EXEC = execute.c execute1.c execute2.c execute3.c execute4.c execute5.c \
-	builtin_cmds.c builtin_cmds1.c builtin_cmds2.c builtin_cmds3.c builtin_cmds4.c
+FILES_EXEC = execute.c execute1.c execute2.c execute3.c execute4.c execute5.c execute6.c \
+	builtin_cmds.c builtin_cmds1.c builtin_cmds2.c builtin_cmds3.c builtin_cmds4.c builtin_cmds5.c \
+	heredoc_stuff.c heredoc_stuff2.c heredoc_stuff_utills.c
+	 
 OFILES = $(FILES:.c=.o)
 OFILES_EXEC = $(FILES_EXEC:.c=.o)
 
-all : $(NAME) clean
+all : $(NAME)
 
 $(NAME) : $(OFILES) $(OFILES_EXEC)
 	$(CC) $(CFLAGS) $(RLFLAGS) $(OFILES) $(OFILES_EXEC) $(INCLUDES) -o $(NAME)
